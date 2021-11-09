@@ -124,14 +124,12 @@ var MongoTradingSessionEntryService = /** @class */ (function () {
                                             status = _a.sent();
                                             console.log(item.InstrumentId + "," + status);
                                             if (status) {
-                                                mergedItem = [
-                                                    {
-                                                        "InstrumentId": item.InstrumentId,
-                                                        "SessionSubId": status.SessionSubId,
-                                                        "SessionStatus": status.SessionStatus,
-                                                        "TimeStamp": status.TimeStamp
-                                                    }
-                                                ];
+                                                mergedItem = {
+                                                    "InstrumentId": item.InstrumentId,
+                                                    "SessionSubId": status.SessionSubId,
+                                                    "SessionStatus": status.SessionStatus,
+                                                    "TimeStamp": status.TimeStamp
+                                                };
                                                 return [2 /*return*/, mergedItem];
                                             }
                                             return [2 /*return*/];

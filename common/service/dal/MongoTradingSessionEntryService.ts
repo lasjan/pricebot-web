@@ -56,14 +56,13 @@ export class MongoTradingSessionEntryService{
                 const status = await TradingSessionStatusEntryCollection.findOne({"InstrumentId":item.InstrumentId}).sort({TimeStamp:-1});
                 console.log(item.InstrumentId +"," +status);
                 if(status){
-                    let mergedItem: { InstrumentId: string, SessionSubId: string, SessionStatus: string, TimeStamp: string }[] = [
-                        { 
-                            "InstrumentId": item.InstrumentId, 
-                            "SessionSubId": status.SessionSubId,
-                            "SessionStatus":status.SessionStatus,
-                            "TimeStamp":status.TimeStamp
-                        }
-                    ];
+                    let mergedItem: { InstrumentId: string, SessionSubId: string, SessionStatus: string, TimeStamp: string }= 
+                    { 
+                        "InstrumentId": item.InstrumentId, 
+                        "SessionSubId": status.SessionSubId,
+                        "SessionStatus":status.SessionStatus,
+                        "TimeStamp":status.TimeStamp
+                    };
                     return mergedItem;
                 }
             });
