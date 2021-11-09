@@ -107,13 +107,13 @@ var MongoTradingSessionEntryService = /** @class */ (function () {
                         return [4 /*yield*/, InstrumentSchema_1.default.find({ "Status": "VERIFIED" })];
                     case 2:
                         verifiedInstruments = _a.sent();
-                        console.log(verifiedInstruments);
+                        //console.log(verifiedInstruments);
                         if (!verifiedInstruments.length) {
                             return [2 /*return*/, null];
                         }
                         else {
                             verifiedInstruments.forEach(function (element) {
-                                console.log(element.InstrumentId);
+                                //console.log(element.InstrumentId);
                             });
                             merged = verifiedInstruments.map(function (item) { return __awaiter(_this, void 0, void 0, function () {
                                 var status, mergedItem;
@@ -122,15 +122,19 @@ var MongoTradingSessionEntryService = /** @class */ (function () {
                                         case 0: return [4 /*yield*/, TradingSessionStatusEntrySchema_1.default.findOne({ "InstrumentId": item.InstrumentId }).sort({ TimeStamp: -1 })];
                                         case 1:
                                             status = _a.sent();
-                                            mergedItem = [
-                                                {
-                                                    "InstrumentId": item.InstrumentId,
-                                                    "SessionSubId": status.SessionSubId,
-                                                    "SessionStatus": status.SessionStatus,
-                                                    "TimeStamp": status.TimeStamp
-                                                }
-                                            ];
-                                            return [2 /*return*/, mergedItem];
+                                            console.log(item.InstrumentId + "," + status);
+                                            if (status) {
+                                                mergedItem = [
+                                                    {
+                                                        "InstrumentId": item.InstrumentId,
+                                                        "SessionSubId": status.SessionSubId,
+                                                        "SessionStatus": status.SessionStatus,
+                                                        "TimeStamp": status.TimeStamp
+                                                    }
+                                                ];
+                                                return [2 /*return*/, mergedItem];
+                                            }
+                                            return [2 /*return*/];
                                     }
                                 });
                             }); });

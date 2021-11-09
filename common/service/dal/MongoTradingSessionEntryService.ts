@@ -44,26 +44,28 @@ export class MongoTradingSessionEntryService{
         await mongoDefaultConnection();
         
         var verifiedInstruments = await InstrumentModelCollection.find({"Status":"VERIFIED"});
-        console.log(verifiedInstruments);
+        //console.log(verifiedInstruments);
         if(!verifiedInstruments.length){
             return null;
         }
         else {
             verifiedInstruments.forEach(element => {
-                console.log(element.InstrumentId);
+                //console.log(element.InstrumentId);
             });
             const merged = verifiedInstruments.map(async (item)=>{
                 const status = await TradingSessionStatusEntryCollection.findOne({"InstrumentId":item.InstrumentId}).sort({TimeStamp:-1});
-                let mergedItem: { InstrumentId: string, SessionSubId: string, SessionStatus: string, TimeStamp: string }[] = [
-                    { 
-                        "InstrumentId": item.InstrumentId, 
-                        "SessionSubId": status.SessionSubId,
-                        "SessionStatus":status.SessionStatus,
-                        "TimeStamp":status.TimeStamp
-                    }
-                ];
-                return mergedItem;
-                
+                console.log(item.InstrumentId +"," +status);
+                if(status){
+                    let mergedItem: { InstrumentId: string, SessionSubId: string, SessionStatus: string, TimeStamp: string }[] = [
+                        { 
+                            "InstrumentId": item.InstrumentId, 
+                            "SessionSubId": status.SessionSubId,
+                            "SessionStatus":status.SessionStatus,
+                            "TimeStamp":status.TimeStamp
+                        }
+                    ];
+                    return mergedItem;
+                }
             });
             var final = Promise.all(merged);
         }
