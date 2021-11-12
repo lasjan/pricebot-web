@@ -36,6 +36,8 @@ export class MongoTradingSessionChangeEventService{
             PreviousSessionSubId:   event.PreviousSessionSubId,
             CurrentSessionStatus:   event.CurrentSessionStatus,
             PreviousSessionStatus:  event.PreviousSessionStatus,
+            Type:                   event.Type,
+            SubType:                event.SubType,
             TimeStamp:              event.TimeStamp
         });
 

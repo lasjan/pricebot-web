@@ -82,6 +82,8 @@ var MongoTradingSessionChangeEventService = /** @class */ (function () {
                             PreviousSessionSubId: event.PreviousSessionSubId,
                             CurrentSessionStatus: event.CurrentSessionStatus,
                             PreviousSessionStatus: event.PreviousSessionStatus,
+                            Type: event.Type,
+                            SubType: event.SubType,
                             TimeStamp: event.TimeStamp
                         });
                         return [4 /*yield*/, dbEntry.save()];

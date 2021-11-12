@@ -8,6 +8,8 @@ const tradingSessionChangeEventSchema = new mongoose.Schema({
     PreviousSessionSubId: { type: String, required: true },
     CurrentSessionStatus: { type: String, required: false },
     PreviousSessionStatus: { type: String, required: false },
+    Type: { type: String, required: true },
+    SubType: { type: String, required: false },
     TimeStamp: {type:Date}
     });
 let TradingSessionChangeEventCollection = mongoose.model('session-events', tradingSessionChangeEventSchema);
