@@ -8,7 +8,7 @@ export class InstrumentMarketEntry{
     Size!: string;
     OrdersCount!: string;
     PriceLevel!: string;
-    Turnover!: {type:String};
+    TurnoverValue!: {type:String};
     public constructor(init?:Partial<InstrumentMarketEntry>) {
         Object.assign(this, init);
     }

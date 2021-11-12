@@ -85,7 +85,9 @@ export class MongoInstrMarketEntryService{
               Type:r.Type,
               DateTime:r.DateTime,
               TimeStamp: r.TimeStamp,
-              Price:r.Price
+              Price:r.Price,
+              Turnover:r.Turnover,
+              OrdersCount:r.OrdersCount
             }  
             return smth;
           });
@@ -106,7 +108,7 @@ export class MongoInstrMarketEntryService{
             size:           entry.Size,
             OrdersCount:    entry.OrdersCount,
             PriceLevel:     entry.PriceLevel,
-            Turnover:       entry.Turnover
+            Turnover:       entry.TurnoverValue
         });
 
         await dbEntry.save();

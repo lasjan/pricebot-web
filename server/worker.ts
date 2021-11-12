@@ -8,6 +8,7 @@ import { tokenRouter } from './route/tokenRoute';
 import "reflect-metadata";
 import { MiddleLogger } from './middleware/midLogger';
 import Container from 'typedi';
+import { sessionEventRouter } from './route/sessionEventRouter';
 const allowedOrigins = ['http://localhost:4200','http://viewer.server487122.nazwa.pl'];
 
 const options: cors.CorsOptions = {
@@ -28,6 +29,7 @@ const serverStart = ()=>{
     app.use('/marketEntry',marketEntryRouter);
     app.use('/sessionEntry',sessionEntryRouter);
     app.use('/instrument',instrumentRouter);
+    app.use('/sessionEvent',sessionEventRouter);
     app.use(function(err:any, req:any, res:any, next:any) {
       
         console.error(err.stack);

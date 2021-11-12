@@ -12,6 +12,7 @@ var tokenRoute_1 = require("./route/tokenRoute");
 require("reflect-metadata");
 var midLogger_1 = require("./middleware/midLogger");
 var typedi_1 = __importDefault(require("typedi"));
+var sessionEventRouter_1 = require("./route/sessionEventRouter");
 var allowedOrigins = ['http://localhost:4200', 'http://viewer.server487122.nazwa.pl'];
 var options = {
     origin: allowedOrigins
@@ -30,6 +31,7 @@ var serverStart = function () {
     app.use('/marketEntry', marketEntryRouter_1.marketEntryRouter);
     app.use('/sessionEntry', sessionEntryRouter_1.sessionEntryRouter);
     app.use('/instrument', instrumentRoute_1.instrumentRouter);
+    app.use('/sessionEvent', sessionEventRouter_1.sessionEventRouter);
     app.use(function (err, req, res, next) {
         console.error(err.stack);
         res.status(500).send('Something broke!');
