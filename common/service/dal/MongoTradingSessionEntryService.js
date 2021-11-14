@@ -112,9 +112,6 @@ var MongoTradingSessionEntryService = /** @class */ (function () {
                             return [2 /*return*/, null];
                         }
                         else {
-                            verifiedInstruments.forEach(function (element) {
-                                //console.log(element.InstrumentId);
-                            });
                             merged = verifiedInstruments.map(function (item) { return __awaiter(_this, void 0, void 0, function () {
                                 var status, mergedItem;
                                 return __generator(this, function (_a) {

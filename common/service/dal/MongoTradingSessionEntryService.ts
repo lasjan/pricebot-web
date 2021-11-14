@@ -49,9 +49,6 @@ export class MongoTradingSessionEntryService{
             return null;
         }
         else {
-            verifiedInstruments.forEach(element => {
-                //console.log(element.InstrumentId);
-            });
             const merged = verifiedInstruments.map(async (item)=>{
                 const status = await TradingSessionStatusEntryCollection.findOne({"InstrumentId":item.InstrumentId}).sort({TimeStamp:-1});
                 console.log(item.InstrumentId +"," +status);

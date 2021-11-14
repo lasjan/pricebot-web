@@ -41,12 +41,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MongoTradingSessionChangeEventService = void 0;
 var config_1 = __importDefault(require("../../database/config"));
+var InstrumentMarketEntrySchema_1 = __importDefault(require("./model/InstrumentMarketEntrySchema"));
 var TradingSessionChangeEventSchema_1 = __importDefault(require("./model/TradingSessionChangeEventSchema"));
 var MongoTradingSessionChangeEventService = /** @class */ (function () {
     function MongoTradingSessionChangeEventService() {
     }
     MongoTradingSessionChangeEventService.prototype.getTradingSessionChangeEvent = function (search, options) {
         var _a;
+        if (search === void 0) { search = {}; }
         if (options === void 0) { options = {
             Top: 1,
             SortBy: "TimeStamp",
@@ -90,6 +92,82 @@ var MongoTradingSessionChangeEventService = /** @class */ (function () {
                     case 2:
                         _a.sent();
                         return [2 /*return*/];
+                }
+            });
+        });
+    };
+    MongoTradingSessionChangeEventService.prototype.getTradingSessionChangeEventWithMarketEntry = function (search, marketEntriesTypeToJoin, options) {
+        var _a;
+        if (search === void 0) { search = {}; }
+        if (marketEntriesTypeToJoin === void 0) { marketEntriesTypeToJoin = []; }
+        if (options === void 0) { options = {
+            Top: 1,
+            SortBy: "TimeStamp",
+            SortDirection: "desc"
+        }; }
+        return __awaiter(this, void 0, void 0, function () {
+            var sortDirection, limit, sortParams, eventColletion, merged, final;
+            var _this = this;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, (0, config_1.default)()];
+                    case 1:
+                        _b.sent();
+                        sortDirection = options.SortDirection == "desc" ? "-" : "";
+                        limit = (_a = options.Top) !== null && _a !== void 0 ? _a : 1;
+                        sortParams = sortDirection + options.SortBy;
+                        return [4 /*yield*/, TradingSessionChangeEventSchema_1.default.find(search).sort(sortParams).limit(limit)];
+                    case 2:
+                        eventColletion = _b.sent();
+                        if (!eventColletion.length) {
+                            return [2 /*return*/, null];
+                        }
+                        merged = eventColletion.map(function (item) { return __awaiter(_this, void 0, void 0, function () {
+                            var auxData, _i, marketEntriesTypeToJoin_1, mktReqType, marketEntry, smth;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        auxData = [];
+                                        _i = 0, marketEntriesTypeToJoin_1 = marketEntriesTypeToJoin;
+                                        _a.label = 1;
+                                    case 1:
+                                        if (!(_i < marketEntriesTypeToJoin_1.length)) return [3 /*break*/, 4];
+                                        mktReqType = marketEntriesTypeToJoin_1[_i];
+                                        return [4 /*yield*/, InstrumentMarketEntrySchema_1.default.findOne({ "InstrumentId": item.InstrumentId, "Type": mktReqType }).sort({ TimeStamp: -1 })];
+                                    case 2:
+                                        marketEntry = _a.sent();
+                                        //console.log(item.InstrumentId +"," +marketEntry);
+                                        if (marketEntry) {
+                                            auxData.push({
+                                                "Type": marketEntry.Type,
+                                                "Price": marketEntry.Price,
+                                                "Turnover": marketEntry.Turnover,
+                                                "TimeStamp": marketEntry.TimeStamp
+                                            });
+                                        }
+                                        _a.label = 3;
+                                    case 3:
+                                        _i++;
+                                        return [3 /*break*/, 1];
+                                    case 4:
+                                        ;
+                                        smth = {
+                                            InstrumentId: item.InstrumentId,
+                                            CurrentSessionSubId: item.CurrentSessionSubId,
+                                            PreviousSessionSubId: item.PreviousSessionSubId,
+                                            CurrentSessionStatus: item.CurrentSessionStatus,
+                                            PreviousSessionStatus: item.PreviousSessionStatus,
+                                            Type: item.Type,
+                                            SubType: item.SubType,
+                                            TimeStamp: item.TimeStamp,
+                                            market: auxData
+                                        };
+                                        return [2 /*return*/, smth];
+                                }
+                            });
+                        }); });
+                        final = Promise.all(merged);
+                        return [2 /*return*/, final];
                 }
             });
         });

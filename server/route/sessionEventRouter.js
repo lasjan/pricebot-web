@@ -41,21 +41,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sessionEventRouter = void 0;
 var express_1 = __importDefault(require("express"));
+var TradingSessionChangeEventParamBuilder_1 = require("../../common/service/dal/model/search-builders/TradingSessionChangeEventParamBuilder");
 var MongoTradingSessionChangeEventService_1 = require("../../common/service/dal/MongoTradingSessionChangeEventService");
+var wildcards_1 = require("../../common/wildcards");
 var sessionEventRouter = express_1.default.Router();
 exports.sessionEventRouter = sessionEventRouter;
 var tradingSessionEventService = new MongoTradingSessionChangeEventService_1.MongoTradingSessionChangeEventService();
 //-----------------SESSION---------------------------------
-sessionEventRouter.get('/instrument/:instrument/top/:top', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var top_1, dbEntries, ex_1;
+sessionEventRouter.get('/instrumentId/:instrumentId/type/:type/subtype/:subtype/top/:top', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var top_1, searchParams, dbEntries, ex_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
                 top_1 = Number(req.params['top']);
-                return [4 /*yield*/, tradingSessionEventService.getTradingSessionChangeEvent({
-                        InstrumentId: req.params["instrument"]
-                    }, {
+                searchParams = (0, TradingSessionChangeEventParamBuilder_1.BuildSessionChangeParams)(req.params["instrumentId"], req.params["type"], req.params["subtype"]);
+                return [4 /*yield*/, tradingSessionEventService.getTradingSessionChangeEventWithMarketEntry(searchParams, [], {
                         Top: top_1,
                         SortBy: "TimeStamp",
                         SortDirection: "desc"
@@ -72,14 +73,19 @@ sessionEventRouter.get('/instrument/:instrument/top/:top', function (req, res) {
         }
     });
 }); });
-sessionEventRouter.get('/top/:top', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var top_2, dbEntries, ex_2;
+sessionEventRouter.get('/instrumentId/:instrumentId/type/:type/subtype/:subtype/markettypes/:markettypes/top/:top', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var top_2, searchParams, auxMktTypes, dbEntries, ex_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
                 top_2 = Number(req.params['top']);
-                return [4 /*yield*/, tradingSessionEventService.getTradingSessionChangeEvent({}, {
+                searchParams = (0, TradingSessionChangeEventParamBuilder_1.BuildSessionChangeParams)(req.params["instrumentId"], req.params["type"], req.params["subtype"]);
+                auxMktTypes = [];
+                if (req.params["markettypes"] != null && req.params["markettypes"] != wildcards_1.NULL_VAL) {
+                    auxMktTypes = req.params["markettypes"].split(",");
+                }
+                return [4 /*yield*/, tradingSessionEventService.getTradingSessionChangeEventWithMarketEntry(searchParams, auxMktTypes, {
                         Top: top_2,
                         SortBy: "TimeStamp",
                         SortDirection: "desc"
