@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "..\\NOL3LocalWeb"
 		}
 	],
 	"settings": {

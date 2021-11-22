@@ -2,10 +2,12 @@ import { InstrumentMarketEntry } from "./common/model/InstrumentMarketEntry";
 import { MongoInstrMarketEntryService } from "./common/service/dal/MongoInstrMarketEntryService";
 import { getMDBConnString } from "./common/utils";
 import serverStart from "./server/worker";
+
 require('dotenv').config();
 
 
 serverStart();
+
 /*
 let marketMongoService = new MongoInstrMarketEntryService();
 
