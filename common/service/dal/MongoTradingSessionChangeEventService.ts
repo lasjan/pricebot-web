@@ -87,6 +87,7 @@ export class MongoTradingSessionChangeEventService{
             //console.log("==>" + auxData);
             //let mergedItem = {...item.toObject(), ...{ market: auxData} };
             let smth =  {
+                EventId:item.EventId,
                 InstrumentId:item.InstrumentId,
                 CurrentSessionSubId: item.CurrentSessionSubId,
                 PreviousSessionSubId: item.PreviousSessionSubId,

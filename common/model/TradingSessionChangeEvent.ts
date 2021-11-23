@@ -1,4 +1,5 @@
 export class TradingSessionChangeEvent{
+    EventId!:string;
     InstrumentId!:string;
     CurrentSessionSubId!:string;
     PreviousSessionSubId!:string;

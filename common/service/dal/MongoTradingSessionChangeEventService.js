@@ -152,6 +152,7 @@ var MongoTradingSessionChangeEventService = /** @class */ (function () {
                                     case 4:
                                         ;
                                         smth = {
+                                            EventId: item.EventId,
                                             InstrumentId: item.InstrumentId,
                                             CurrentSessionSubId: item.CurrentSessionSubId,
                                             PreviousSessionSubId: item.PreviousSessionSubId,

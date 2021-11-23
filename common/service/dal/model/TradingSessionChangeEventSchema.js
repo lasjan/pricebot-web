@@ -21,6 +21,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var mongoose = __importStar(require("mongoose"));
 var tradingSessionChangeEventSchema = new mongoose.Schema({
+    EventId: { type: String, required: false },
     InstrumentId: { type: String, required: true },
     CurrentSessionSubId: { type: String, required: false },
     PreviousSessionSubId: { type: String, required: false },
