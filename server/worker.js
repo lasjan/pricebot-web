@@ -18,6 +18,7 @@ var options = {
     origin: allowedOrigins
 };
 var logger = typedi_1.default.get(midLogger_1.MiddleLogger);
+console.log(logger);
 var app = (0, express_1.default)();
 app.locals.logger = logger;
 app.use((0, cors_1.default)(options));

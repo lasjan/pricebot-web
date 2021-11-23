@@ -16,6 +16,7 @@ const options: cors.CorsOptions = {
 };
 
 let logger = Container.get(MiddleLogger);
+console.log(logger);
 let app = express();
 app.locals.logger = logger;
 app.use(cors(options));

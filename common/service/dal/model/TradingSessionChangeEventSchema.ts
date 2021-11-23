@@ -4,8 +4,8 @@ import { model } from 'mongoose';
 
 const tradingSessionChangeEventSchema = new mongoose.Schema({
     InstrumentId: {  type: String, required: true },
-    CurrentSessionSubId: { type: String, required: true },
-    PreviousSessionSubId: { type: String, required: true },
+    CurrentSessionSubId: { type: String, required: false },
+    PreviousSessionSubId: { type: String, required: false },
     CurrentSessionStatus: { type: String, required: false },
     PreviousSessionStatus: { type: String, required: false },
     Type: { type: String, required: true },
