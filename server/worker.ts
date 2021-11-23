@@ -22,7 +22,7 @@ app.locals.logger = logger;
 app.use(cors(options));
 app.use(express.json());
 app.use((req, res, next)=>{
-  req.app.locals.logger.process(req);
+  req.app.locals.logger.process("I", req);
   next();
 });
 const serverStart = ()=>{
@@ -34,6 +34,7 @@ const serverStart = ()=>{
     app.use(function(err:any, req:any, res:any, next:any) {
       
         console.error(err.stack);
+        req.app.locals.logger.process("Err", req,err.stack);
         res.status(500).send('Something broke!');
       });
     app.listen(3000, function() {

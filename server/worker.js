@@ -24,7 +24,7 @@ app.locals.logger = logger;
 app.use((0, cors_1.default)(options));
 app.use(express_1.default.json());
 app.use(function (req, res, next) {
-    req.app.locals.logger.process(req);
+    req.app.locals.logger.process("I", req);
     next();
 });
 var serverStart = function () {
@@ -35,6 +35,7 @@ var serverStart = function () {
     app.use('/sessionEvent', sessionEventRouter_1.sessionEventRouter);
     app.use(function (err, req, res, next) {
         console.error(err.stack);
+        req.app.locals.logger.process("Err", req, err.stack);
         res.status(500).send('Something broke!');
     });
     app.listen(3000, function () {

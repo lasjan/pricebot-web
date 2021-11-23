@@ -18,7 +18,7 @@ var MiddleLogger = /** @class */ (function () {
         this.dbLogger = dbLogger;
         this.excludedIps = [];
     }
-    MiddleLogger.prototype.process = function (req) {
+    MiddleLogger.prototype.process = function (type, req, auxInfo1, auxInfo2) {
         var _a;
         var APP_LOG_EXCLUDED_IPS = process.env.APP_LOG_EXCLUDED_IPS;
         this.excludedIps = (APP_LOG_EXCLUDED_IPS !== null && APP_LOG_EXCLUDED_IPS !== void 0 ? APP_LOG_EXCLUDED_IPS : "").split("#");
@@ -27,7 +27,7 @@ var MiddleLogger = /** @class */ (function () {
         var body = JSON.stringify((_a = req.body) !== null && _a !== void 0 ? _a : "");
         console.log(this.excludedIps);
         if (this.excludedIps.indexOf(ip) < 0) {
-            this.dbLogger.InternalLog(ip, fullUrl, body, "", "");
+            this.dbLogger.InternalLog(type, ip, fullUrl, body, auxInfo1, auxInfo2);
         }
     };
     MiddleLogger = __decorate([

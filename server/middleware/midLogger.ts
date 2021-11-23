@@ -6,12 +6,10 @@ import "reflect-metadata";
 @Service()
 export class MiddleLogger{
     excludedIps: Array<string> = [];
-    constructor(
-        private dbLogger: MongoLogger
-      ) {     
+    constructor(private dbLogger: MongoLogger) {     
       }
 
-    public process(req: any) {
+    public process(type:string, req: any, auxInfo1:string, auxInfo2:string) {
       const {APP_LOG_EXCLUDED_IPS} = process.env;
       this.excludedIps = (APP_LOG_EXCLUDED_IPS??"").split("#"); 
       const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -19,7 +17,7 @@ export class MiddleLogger{
       const body = JSON.stringify(req.body??"");
       console.log(this.excludedIps);
       if(this.excludedIps.indexOf(ip) < 0){
-        this.dbLogger.InternalLog(ip,fullUrl,body,"","");
+        this.dbLogger.InternalLog(type,ip,fullUrl,body,auxInfo1,auxInfo2);
       }
     }
 }

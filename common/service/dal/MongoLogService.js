@@ -53,7 +53,7 @@ var LogSchema_1 = __importDefault(require("./model/LogSchema"));
 var MongoLogger = /** @class */ (function () {
     function MongoLogger() {
     }
-    MongoLogger.prototype.InternalLog = function (reqIp, reqUrl, arg1, arg2, arg3) {
+    MongoLogger.prototype.InternalLog = function (type, reqIp, reqUrl, arg1, arg2, arg3) {
         return __awaiter(this, void 0, void 0, function () {
             var APP_INSTANCE, APP_SERVER, now, dbEntry;
             return __generator(this, function (_a) {
@@ -61,14 +61,13 @@ var MongoLogger = /** @class */ (function () {
                     case 0:
                         APP_INSTANCE = process.env.APP_INSTANCE;
                         APP_SERVER = process.env.APP_SERVER;
-                        console.log("internal: " + APP_INSTANCE + "," + APP_SERVER);
+                        console.log("internal: " + APP_INSTANCE + "," + APP_SERVER + "," + reqUrl + "," + arg1 + "," + arg2 + "," + arg3);
                         //console.log(reqIp + "," + reqUrl + "," + arg1 +"," + arg2 + "," + arg3) ;
                         return [4 /*yield*/, (0, config_1.default)()];
                     case 1:
                         //console.log(reqIp + "," + reqUrl + "," + arg1 +"," + arg2 + "," + arg3) ;
                         _a.sent();
                         now = (0, utils_1.getCurrentDate)();
-                        console.log(now);
                         dbEntry = new LogSchema_1.default({
                             AppName: APP_INSTANCE,
                             AppServer: APP_SERVER,

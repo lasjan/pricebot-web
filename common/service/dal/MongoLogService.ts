@@ -7,15 +7,15 @@ import LogModelCollection from "./model/LogSchema";
 @Service()
 export class MongoLogger{
    
-    public async InternalLog(reqIp:string,reqUrl:string,arg1:string,arg2:string,arg3:string)
+    public async InternalLog(type:string, reqIp:string,reqUrl:string,arg1:string,arg2:string,arg3:string)
     {
         const { APP_INSTANCE } = process.env;
         const { APP_SERVER } = process.env;
-        console.log("internal: " + APP_INSTANCE + "," + APP_SERVER);
+        console.log("internal: " + APP_INSTANCE + "," + APP_SERVER +"," + reqUrl + "," + arg1 +"," + arg2 + "," + arg3);
         //console.log(reqIp + "," + reqUrl + "," + arg1 +"," + arg2 + "," + arg3) ;
         await mongoDefaultConnection();
         let now = getCurrentDate();
-        console.log(now);
+       //console.log(now);
         let dbEntry = new LogModelCollection({
             AppName:        APP_INSTANCE,
             AppServer:      APP_SERVER,
