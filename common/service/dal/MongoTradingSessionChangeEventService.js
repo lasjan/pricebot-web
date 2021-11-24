@@ -44,7 +44,8 @@ var config_1 = __importDefault(require("../../database/config"));
 var InstrumentMarketEntrySchema_1 = __importDefault(require("./model/InstrumentMarketEntrySchema"));
 var TradingSessionChangeEventSchema_1 = __importDefault(require("./model/TradingSessionChangeEventSchema"));
 var MongoTradingSessionChangeEventService = /** @class */ (function () {
-    function MongoTradingSessionChangeEventService() {
+    function MongoTradingSessionChangeEventService(loggerService) {
+        this._loggerService = loggerService;
     }
     MongoTradingSessionChangeEventService.prototype.getTradingSessionChangeEvent = function (search, options) {
         var _a;
@@ -72,7 +73,7 @@ var MongoTradingSessionChangeEventService = /** @class */ (function () {
     };
     MongoTradingSessionChangeEventService.prototype.addTradingSessionChangeEvent = function (event) {
         return __awaiter(this, void 0, void 0, function () {
-            var dbEntry;
+            var dbEntry, ex_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, config_1.default)()];
@@ -88,10 +89,20 @@ var MongoTradingSessionChangeEventService = /** @class */ (function () {
                             SubType: event.SubType,
                             TimeStamp: event.TimeStamp
                         });
-                        return [4 /*yield*/, dbEntry.save()];
+                        _a.label = 2;
                     case 2:
+                        _a.trys.push([2, 4, , 5]);
+                        return [4 /*yield*/, dbEntry.save()];
+                    case 3:
                         _a.sent();
-                        return [2 /*return*/];
+                        return [3 /*break*/, 5];
+                    case 4:
+                        ex_1 = _a.sent();
+                        if (ex_1 instanceof Error) {
+                            this._loggerService.InternalLog("E", "MongoTradingSessionChangeEventService.addTradingSessionChangeEvent", ex_1.message, dbEntry, "", "");
+                        }
+                        return [3 /*break*/, 5];
+                    case 5: return [2 /*return*/];
                 }
             });
         });

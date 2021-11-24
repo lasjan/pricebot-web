@@ -72,6 +72,7 @@ var MongoLogger = /** @class */ (function () {
                             AppName: APP_INSTANCE,
                             AppServer: APP_SERVER,
                             Context: reqIp,
+                            LogType: type,
                             Slot1: reqUrl,
                             Slot2: arg1,
                             Slot3: arg2,

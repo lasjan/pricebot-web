@@ -8,11 +8,15 @@ import TradingSessionChangeEventCollection from "./model/TradingSessionChangeEve
 import { TradingSessionChangeEventSearchParams } from "./model/TradingSessionChangeEventSearchParams";
 import TradingSessionStatusEntryCollection from "./model/TradingSessionStatusEntrySchema";
 import { TradingSessionStatusSearchParams } from "./model/TradingSessionStatusSearchParams";
+import { MongoLogger } from "./MongoLogService";
 import { SearchOptions } from "./MongoSearchOptions";
 
 
 export class MongoTradingSessionChangeEventService{
-
+    private _loggerService: MongoLogger;
+    constructor(loggerService: MongoLogger) {
+        this._loggerService = loggerService;
+    }
     async getTradingSessionChangeEvent(
         search: TradingSessionChangeEventSearchParams = {},
         options:SearchOptions = 
@@ -42,8 +46,14 @@ export class MongoTradingSessionChangeEventService{
             SubType:                event.SubType,
             TimeStamp:              event.TimeStamp
         });
-
-        await dbEntry.save();
+        try{
+            await dbEntry.save();
+        }
+        catch(ex:any){
+            if(ex instanceof Error){
+            this._loggerService.InternalLog("E","MongoTradingSessionChangeEventService.addTradingSessionChangeEvent",(ex as Error).message,dbEntry,"","");
+        }
+        }
     }
     async getTradingSessionChangeEventWithMarketEntry(
         search: TradingSessionChangeEventSearchParams = {},

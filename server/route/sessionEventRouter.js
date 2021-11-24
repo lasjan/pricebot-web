@@ -41,12 +41,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sessionEventRouter = void 0;
 var express_1 = __importDefault(require("express"));
+var typedi_1 = __importDefault(require("typedi"));
 var TradingSessionChangeEventParamBuilder_1 = require("../../common/service/dal/model/search-builders/TradingSessionChangeEventParamBuilder");
+var MongoLogService_1 = require("../../common/service/dal/MongoLogService");
 var MongoTradingSessionChangeEventService_1 = require("../../common/service/dal/MongoTradingSessionChangeEventService");
 var wildcards_1 = require("../../common/wildcards");
 var sessionEventRouter = express_1.default.Router();
 exports.sessionEventRouter = sessionEventRouter;
-var tradingSessionEventService = new MongoTradingSessionChangeEventService_1.MongoTradingSessionChangeEventService();
+var serviceInstance = typedi_1.default.get(MongoLogService_1.MongoLogger);
+var tradingSessionEventService = new MongoTradingSessionChangeEventService_1.MongoTradingSessionChangeEventService(serviceInstance);
 //-----------------SESSION---------------------------------
 sessionEventRouter.get('/instrumentId/:instrumentId/type/:type/subtype/:subtype/top/:top', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var top_1, searchParams, dbEntries, ex_1;

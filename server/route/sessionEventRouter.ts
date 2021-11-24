@@ -1,11 +1,14 @@
 import express from "express";
+import Container from "typedi";
 import { BuildSessionChangeParams } from "../../common/service/dal/model/search-builders/TradingSessionChangeEventParamBuilder";
+import { MongoLogger } from "../../common/service/dal/MongoLogService";
 import { MongoTradingSessionChangeEventService } from "../../common/service/dal/MongoTradingSessionChangeEventService";
 import { MongoTradingSessionEntryService } from "../../common/service/dal/MongoTradingSessionEntryService";
 import { NULL_VAL } from "../../common/wildcards";
 
 let sessionEventRouter = express.Router();
-let tradingSessionEventService = new MongoTradingSessionChangeEventService();
+const serviceInstance = Container.get(MongoLogger);
+let tradingSessionEventService = new MongoTradingSessionChangeEventService(serviceInstance);
 
 //-----------------SESSION---------------------------------
 

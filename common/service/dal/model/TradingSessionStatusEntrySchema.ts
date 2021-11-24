@@ -4,7 +4,7 @@ import { model } from 'mongoose';
 
 const tradingSessionStatusEntrySchema = new mongoose.Schema({
     InstrumentId: {  type: String, required: true },
-    SessionSubId: { type: String, required: false },
+    SessionSubId: { type: String, required: true },
     SessionId : { type: String},
     InstrumentSecId:  { type: String},
     InstrumentSecIdSource : { type: String},
