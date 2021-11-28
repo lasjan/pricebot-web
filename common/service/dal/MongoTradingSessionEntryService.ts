@@ -27,7 +27,29 @@ export class MongoTradingSessionEntryService{
 
     async addTradingSessionEntry(entry:TradingSessionEntry):Promise<any>{
         await mongoDefaultConnection();
-        
+        let query = 
+        {   
+            InstrumentId:           entry.InstrumentId,
+            SessionSubId:           entry.SessionSubId,
+            SessionId:              entry.SessionId,
+            InstrumentSecId:        entry.InstrumentSecId,
+            InstrumentSecIdSource:  entry.InstrumentSecIdSource,
+            SessionStatus:          entry.SessionStatus
+        };
+        let update = 
+        {
+            TimeStamp:              entry.TimeStamp
+        };
+        let options = { upsert: true, new: true, setDefaultsOnInsert: true };
+/*
+    SessionId!:string;
+    InstrumentId!:string;
+    SessionSubId!:string;
+    InstrumentSecId!:string;
+    InstrumentSecIdSource!:string;
+    SessionStatus!:string;
+    TimeStamp!:string;
+
         let dbEntry = new TradingSessionStatusEntryCollection({
             InstrumentId:           entry.InstrumentId,
             SessionSubId:           entry.SessionSubId,
@@ -36,9 +58,9 @@ export class MongoTradingSessionEntryService{
             InstrumentSecIdSource:  entry.InstrumentSecIdSource,
             SessionStatus:          entry.SessionStatus,
             TimeStamp:              entry.TimeStamp
-        });
+        });*/
 
-        await dbEntry.save();
+        await TradingSessionStatusEntryCollection.findOneAndUpdate(query,update,options);
     }
     async getSessionEventTable():Promise<any>{
         await mongoDefaultConnection();

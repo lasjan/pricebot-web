@@ -86,18 +86,22 @@ marketEntryRouter.get('/instrument/:instrument/type/:type/top/:top', function (r
     });
 }); });
 marketEntryRouter.post('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var ex_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                console.log('Got body:', req.body);
-                return [4 /*yield*/, marketEntryService.addInstrumentMarketEntry(req.body)
-                    //res.send('post!');
-                ];
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, marketEntryService.addInstrumentMarketEntry(req.body)];
             case 1:
                 _a.sent();
-                //res.send('post!');
                 res.sendStatus(200);
-                return [2 /*return*/];
+                return [3 /*break*/, 3];
+            case 2:
+                ex_2 = _a.sent();
+                console.log(ex_2);
+                res.sendStatus(400);
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); });

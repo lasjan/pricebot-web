@@ -40,10 +40,14 @@ marketEntryRouter.get('/instrument/:instrument/type/:type/top/:top',async (req, 
 });
 
 marketEntryRouter.post('/',async (req, res)=>{
-    console.log('Got body:', req.body);
-    await marketEntryService.addInstrumentMarketEntry(req.body)
-    //res.send('post!');
-    res.sendStatus(200);
+    try {
+        await marketEntryService.addInstrumentMarketEntry(req.body)
+
+    res.sendStatus(200);}
+    catch(ex){
+        console.log(ex);
+        res.sendStatus(400);
+    } 
 })
 
 

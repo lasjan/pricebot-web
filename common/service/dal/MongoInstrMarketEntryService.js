@@ -144,26 +144,53 @@ var MongoInstrMarketEntryService = /** @class */ (function () {
     };
     MongoInstrMarketEntryService.prototype.addInstrumentMarketEntry = function (entry) {
         return __awaiter(this, void 0, void 0, function () {
-            var dbEntry;
+            var query, update, options;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, config_1.default)()];
                     case 1:
                         _a.sent();
-                        dbEntry = new InstrumentMarketEntrySchema_1.default({
+                        query = {
                             InstrumentId: entry.InstrumentId,
                             Type: entry.Type,
-                            TimeStamp: entry.TimeStamp,
                             DateTime: entry.DateTime,
                             Price: entry.Price,
                             Currency: entry.Currency,
-                            size: entry.Size,
+                            Size: entry.Size,
                             OrdersCount: entry.OrdersCount,
                             PriceLevel: entry.PriceLevel,
                             Turnover: entry.TurnoverValue
-                        });
-                        return [4 /*yield*/, dbEntry.save()];
+                        };
+                        update = {
+                            TimeStamp: entry.TimeStamp
+                        };
+                        options = { upsert: true, new: true, setDefaultsOnInsert: true };
+                        /*let dbEntry = new InstrMarketEntryCollection({
+                            InstrumentId:   entry.InstrumentId,
+                            Type:           entry.Type,
+                            TimeStamp:      entry.TimeStamp,
+                            DateTime:       entry.DateTime,
+                            Price:          entry.Price,
+                            Currency:       entry.Currency,
+                            size:           entry.Size,
+                            OrdersCount:    entry.OrdersCount,
+                            PriceLevel:     entry.PriceLevel,
+                            Turnover:       entry.TurnoverValue
+                        });*/
+                        return [4 /*yield*/, InstrumentMarketEntrySchema_1.default.findOneAndUpdate(query, update, options)];
                     case 2:
+                        /*let dbEntry = new InstrMarketEntryCollection({
+                            InstrumentId:   entry.InstrumentId,
+                            Type:           entry.Type,
+                            TimeStamp:      entry.TimeStamp,
+                            DateTime:       entry.DateTime,
+                            Price:          entry.Price,
+                            Currency:       entry.Currency,
+                            size:           entry.Size,
+                            OrdersCount:    entry.OrdersCount,
+                            PriceLevel:     entry.PriceLevel,
+                            Turnover:       entry.TurnoverValue
+                        });*/
                         _a.sent();
                         return [2 /*return*/];
                 }

@@ -98,7 +98,25 @@ export class MongoInstrMarketEntryService{
     async addInstrumentMarketEntry(entry:InstrumentMarketEntry):Promise<any>{
         await mongoDefaultConnection();
         
-        let dbEntry = new InstrMarketEntryCollection({
+        let query = 
+        {   
+            InstrumentId:   entry.InstrumentId,
+            Type:           entry.Type,
+            DateTime:       entry.DateTime,
+            Price:          entry.Price,
+            Currency:       entry.Currency,
+            Size:           entry.Size,
+            OrdersCount:    entry.OrdersCount,
+            PriceLevel:     entry.PriceLevel,
+            Turnover:       entry.TurnoverValue
+        };
+        let update = 
+        {
+            TimeStamp:      entry.TimeStamp
+        };
+        let options = { upsert: true, new: true, setDefaultsOnInsert: true };
+
+        /*let dbEntry = new InstrMarketEntryCollection({
             InstrumentId:   entry.InstrumentId,
             Type:           entry.Type,
             TimeStamp:      entry.TimeStamp,
@@ -109,8 +127,8 @@ export class MongoInstrMarketEntryService{
             OrdersCount:    entry.OrdersCount,
             PriceLevel:     entry.PriceLevel,
             Turnover:       entry.TurnoverValue
-        });
+        });*/
 
-        await dbEntry.save();
+        await InstrMarketEntryCollection.findOneAndUpdate(query,update,options);
     }
 } 

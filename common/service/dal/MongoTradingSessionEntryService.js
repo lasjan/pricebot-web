@@ -72,23 +72,62 @@ var MongoTradingSessionEntryService = /** @class */ (function () {
     };
     MongoTradingSessionEntryService.prototype.addTradingSessionEntry = function (entry) {
         return __awaiter(this, void 0, void 0, function () {
-            var dbEntry;
+            var query, update, options;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, config_1.default)()];
                     case 1:
                         _a.sent();
-                        dbEntry = new TradingSessionStatusEntrySchema_1.default({
+                        query = {
                             InstrumentId: entry.InstrumentId,
                             SessionSubId: entry.SessionSubId,
                             SessionId: entry.SessionId,
                             InstrumentSecId: entry.InstrumentSecId,
                             InstrumentSecIdSource: entry.InstrumentSecIdSource,
-                            SessionStatus: entry.SessionStatus,
+                            SessionStatus: entry.SessionStatus
+                        };
+                        update = {
                             TimeStamp: entry.TimeStamp
-                        });
-                        return [4 /*yield*/, dbEntry.save()];
+                        };
+                        options = { upsert: true, new: true, setDefaultsOnInsert: true };
+                        /*
+                            SessionId!:string;
+                            InstrumentId!:string;
+                            SessionSubId!:string;
+                            InstrumentSecId!:string;
+                            InstrumentSecIdSource!:string;
+                            SessionStatus!:string;
+                            TimeStamp!:string;
+                        
+                                let dbEntry = new TradingSessionStatusEntryCollection({
+                                    InstrumentId:           entry.InstrumentId,
+                                    SessionSubId:           entry.SessionSubId,
+                                    SessionId:              entry.SessionId,
+                                    InstrumentSecId:        entry.InstrumentSecId,
+                                    InstrumentSecIdSource:  entry.InstrumentSecIdSource,
+                                    SessionStatus:          entry.SessionStatus,
+                                    TimeStamp:              entry.TimeStamp
+                                });*/
+                        return [4 /*yield*/, TradingSessionStatusEntrySchema_1.default.findOneAndUpdate(query, update, options)];
                     case 2:
+                        /*
+                            SessionId!:string;
+                            InstrumentId!:string;
+                            SessionSubId!:string;
+                            InstrumentSecId!:string;
+                            InstrumentSecIdSource!:string;
+                            SessionStatus!:string;
+                            TimeStamp!:string;
+                        
+                                let dbEntry = new TradingSessionStatusEntryCollection({
+                                    InstrumentId:           entry.InstrumentId,
+                                    SessionSubId:           entry.SessionSubId,
+                                    SessionId:              entry.SessionId,
+                                    InstrumentSecId:        entry.InstrumentSecId,
+                                    InstrumentSecIdSource:  entry.InstrumentSecIdSource,
+                                    SessionStatus:          entry.SessionStatus,
+                                    TimeStamp:              entry.TimeStamp
+                                });*/
                         _a.sent();
                         return [2 /*return*/];
                 }
