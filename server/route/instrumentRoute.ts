@@ -15,6 +15,17 @@ instrumentRouter.get('/anynew',async (req, res)=>{
 
     res.send(`{any:${instruments!=null && instruments.length>0}}`);
 });
+instrumentRouter.get('/',async (req, res)=>{
+    let instruments = await instrumentService.getInstrument(
+        {},
+        {
+            SortBy:"TimeStamp",
+            SortDirection:"desc"
+        }
+    );
+    res.send(instruments);
+});
+
 instrumentRouter.get('/status/:status/top/:top',async (req, res)=>{
     let top = Number(req.params['top']);
     let instruments = await instrumentService.getInstrument(

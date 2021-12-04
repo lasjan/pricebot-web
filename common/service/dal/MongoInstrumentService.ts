@@ -22,7 +22,7 @@ export class MongoInstrumentService {
         
         await mongoDefaultConnection();
         const sortDirection= options.SortDirection;
-        const limit = options.Top??1;
+        const limit = options.Top??0;
             //console.log(search);
         return await InstrumentModelCollection.find(search).sort({sortField: sortDirection}).limit(limit);
     }
@@ -43,7 +43,8 @@ export class MongoInstrumentService {
         }
     }
     async setInstrument(instrument:Instrument):Promise<any>{
-        await connect(getMDBConnString(process.env.DB_NOL3_USER!,process.env.DB_NOL3_USER_PASS!));
+        //await connect(getMDBConnString(process.env.DB_NOL3_USER!,process.env.DB_NOL3_USER_PASS!));
+        await mongoDefaultConnection();
         let now = getCurrentDate();;
         await InstrumentModelCollection.updateOne({InstrumentId:instrument.InstrumentId},{Status:instrument.Status});
 

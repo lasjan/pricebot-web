@@ -71,6 +71,21 @@ instrumentRouter.get('/anynew', function (req, res) { return __awaiter(void 0, v
         }
     });
 }); });
+instrumentRouter.get('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var instruments;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, instrumentService.getInstrument({}, {
+                    SortBy: "TimeStamp",
+                    SortDirection: "desc"
+                })];
+            case 1:
+                instruments = _a.sent();
+                res.send(instruments);
+                return [2 /*return*/];
+        }
+    });
+}); });
 instrumentRouter.get('/status/:status/top/:top', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var top, instruments;
     return __generator(this, function (_a) {

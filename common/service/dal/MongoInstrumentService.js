@@ -46,7 +46,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MongoInstrumentService = void 0;
-var mongoose_1 = require("mongoose");
 var typedi_1 = require("typedi");
 var utils_1 = require("../../utils");
 var InstrumentSchema_1 = __importDefault(require("./model/InstrumentSchema"));
@@ -71,7 +70,7 @@ var MongoInstrumentService = /** @class */ (function () {
                     case 1:
                         _b.sent();
                         sortDirection = options.SortDirection;
-                        limit = (_a = options.Top) !== null && _a !== void 0 ? _a : 1;
+                        limit = (_a = options.Top) !== null && _a !== void 0 ? _a : 0;
                         return [4 /*yield*/, InstrumentSchema_1.default.find(search).sort({ sortField: sortDirection }).limit(limit)];
                     case 2: 
                     //console.log(search);
@@ -112,8 +111,11 @@ var MongoInstrumentService = /** @class */ (function () {
             var now;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)((0, utils_1.getMDBConnString)(process.env.DB_NOL3_USER, process.env.DB_NOL3_USER_PASS))];
+                    case 0: 
+                    //await connect(getMDBConnString(process.env.DB_NOL3_USER!,process.env.DB_NOL3_USER_PASS!));
+                    return [4 /*yield*/, (0, config_1.default)()];
                     case 1:
+                        //await connect(getMDBConnString(process.env.DB_NOL3_USER!,process.env.DB_NOL3_USER_PASS!));
                         _a.sent();
                         now = (0, utils_1.getCurrentDate)();
                         ;
