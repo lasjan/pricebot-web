@@ -61,10 +61,11 @@ var MongoLogger = /** @class */ (function () {
                     case 0:
                         APP_INSTANCE = process.env.APP_INSTANCE;
                         APP_SERVER = process.env.APP_SERVER;
-                        console.log("internal: " + APP_INSTANCE + "," + APP_SERVER + "," + reqUrl + "," + arg1 + "," + arg2 + "," + arg3);
+                        //console.log("internal: " + APP_INSTANCE + "," + APP_SERVER +"," + reqUrl + "," + arg1 +"," + arg2 + "," + arg3);
                         //console.log(reqIp + "," + reqUrl + "," + arg1 +"," + arg2 + "," + arg3) ;
                         return [4 /*yield*/, (0, config_1.default)()];
                     case 1:
+                        //console.log("internal: " + APP_INSTANCE + "," + APP_SERVER +"," + reqUrl + "," + arg1 +"," + arg2 + "," + arg3);
                         //console.log(reqIp + "," + reqUrl + "," + arg1 +"," + arg2 + "," + arg3) ;
                         _a.sent();
                         now = (0, utils_1.getCurrentDate)();

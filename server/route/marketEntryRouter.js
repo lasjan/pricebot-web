@@ -45,11 +45,13 @@ var typedi_1 = __importDefault(require("typedi"));
 var NOLServerException_1 = require("../../common/exception/NOLServerException");
 var MongoInstrMarketEntryService_1 = require("../../common/service/dal/MongoInstrMarketEntryService");
 var MongoInstrumentService_1 = require("../../common/service/dal/MongoInstrumentService");
+var MongoLogService_1 = require("../../common/service/dal/MongoLogService");
 var marketEntryRouter = express_1.default.Router();
 exports.marketEntryRouter = marketEntryRouter;
 marketEntryService: MongoInstrMarketEntryService_1.MongoInstrMarketEntryService;
 var serviceInstance = typedi_1.default.get(MongoInstrumentService_1.MongoInstrumentService);
-var marketEntryService = new MongoInstrMarketEntryService_1.MongoInstrMarketEntryService(serviceInstance);
+var loggerInstance = typedi_1.default.get(MongoLogService_1.MongoLogger);
+var marketEntryService = new MongoInstrMarketEntryService_1.MongoInstrMarketEntryService(serviceInstance, loggerInstance);
 marketEntryRouter.get('/instrument/:instrument/type/:type/top/:top', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var top_1, dbEntries, ex_1;
     return __generator(this, function (_a) {

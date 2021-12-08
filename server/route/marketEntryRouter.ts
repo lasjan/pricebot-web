@@ -3,12 +3,14 @@ import Container from "typedi";
 import { NOLServerException } from "../../common/exception/NOLServerException";
 import { MongoInstrMarketEntryService } from "../../common/service/dal/MongoInstrMarketEntryService";
 import { MongoInstrumentService } from "../../common/service/dal/MongoInstrumentService";
+import { MongoLogger } from "../../common/service/dal/MongoLogService";
 
 let marketEntryRouter = express.Router();
 marketEntryService : MongoInstrMarketEntryService;
 
 const serviceInstance = Container.get(MongoInstrumentService);
-let marketEntryService = new MongoInstrMarketEntryService(serviceInstance);
+const loggerInstance = Container.get(MongoLogger);
+let marketEntryService = new MongoInstrMarketEntryService(serviceInstance,loggerInstance);
 
 marketEntryRouter.get('/instrument/:instrument/type/:type/top/:top',async (req, res)=>{
     try{

@@ -11,7 +11,7 @@ export class MongoLogger{
     {
         const { APP_INSTANCE } = process.env;
         const { APP_SERVER } = process.env;
-        console.log("internal: " + APP_INSTANCE + "," + APP_SERVER +"," + reqUrl + "," + arg1 +"," + arg2 + "," + arg3);
+        //console.log("internal: " + APP_INSTANCE + "," + APP_SERVER +"," + reqUrl + "," + arg1 +"," + arg2 + "," + arg3);
         //console.log(reqIp + "," + reqUrl + "," + arg1 +"," + arg2 + "," + arg3) ;
         await mongoDefaultConnection();
         let now = getCurrentDate();

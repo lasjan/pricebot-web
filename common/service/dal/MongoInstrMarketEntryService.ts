@@ -5,6 +5,7 @@ import InstrMarketEntryCollection from "./model/InstrumentMarketEntrySchema";
 import { InstrumentMarketSearchParams } from "./model/InstrumentMarketSearchParams";
 import { SearchOptions } from "./MongoSearchOptions";
 import { MongoInstrumentService } from "./MongoInstrumentService";
+import { MongoLogger } from "./MongoLogService";
 import { Container, Service } from 'typedi';
 import { getMDBConnString, sleep } from "../../utils";
 import { verify } from "crypto";
@@ -17,9 +18,11 @@ export class MongoInstrMarketEntryService{
      */
     allowedInstr: Array<string> = ["BUMECH","ONEMORE"];
     private _instrumentService: MongoInstrumentService;
- 
-    constructor(instrumentService: MongoInstrumentService) {
+    private _logger: MongoLogger;
+    constructor(instrumentService: MongoInstrumentService,
+        logger:MongoLogger) {
         this._instrumentService = instrumentService;
+        this._logger = logger;
     }
     async getInstrumentMarketEntry(
         search:InstrumentMarketSearchParams = {},
@@ -42,37 +45,48 @@ export class MongoInstrMarketEntryService{
         {
             InstrumentId:search.InstrumentId
         });
-
+        this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"search",JSON.stringify(search),"");
         if(instrument == null || instrument.length == 0){
+            this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"not found",JSON.stringify(search),"");
             let freshInstrument = new Instrument({InstrumentId:search.InstrumentId});
             await this._instrumentService.addInstrument(freshInstrument);   
-
+            this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"saved",JSON.stringify(search),"");
             let cntInt = 0 ;
-            while(cntInt++<10){
+            while(cntInt++<30){
 
                 instrument = await this._instrumentService.getInstrument(
                     {
                         InstrumentId:search.InstrumentId
                     });
-                if(instrument != null && instrument.length != 0 &&instrument[0].Status != "NEW"){
+                this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"checking",JSON.stringify(search),cntInt.toString());
+                if(instrument != null 
+                    && instrument.length != 0 
+                    && instrument[0].Status != "NEW"
+                    && instrument[0].Status != "PENDING"){
                     break;
                 }
                 await sleep(1000);
             }
+            this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"loop finish",JSON.stringify(search),cntInt.toString());
         }
         if(instrument != null && instrument.length != 0){
             if(instrument[0].Status == "REJECTED"){;
+                this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"rejected",JSON.stringify(search),"");
                 throw new NOLServerException("Bad instrument name");
             }
         }
         let results = await InstrMarketEntryCollection.find(search).sort(sortParams).limit(limit);
-
+        this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"searchMKT",JSON.stringify(search),JSON.stringify(results));
         if(results == null || !results.length)
         { 
+            this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"noResultsMKT",JSON.stringify(search),"");
             let cntInt = 0 ;
             while(cntInt++<10){
                 results = await InstrMarketEntryCollection.find(search).sort(sortParams).limit(limit);
+                this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"searchLoopMKT",JSON.stringify(results),cntInt.toString());
                 if(!(results == null || !results.length)){
+                    this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"foundMKT",JSON.stringify(results),cntInt.toString());
+              
                     break;
                 }
                 await sleep(1000);
@@ -91,7 +105,8 @@ export class MongoInstrMarketEntryService{
             }  
             return smth;
           });
-
+          this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"mapped",JSON.stringify(search),JSON.stringify(mapped));
+              
           return mapped;
     }
 
