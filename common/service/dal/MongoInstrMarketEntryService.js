@@ -47,10 +47,6 @@ var Instrument_1 = require("../../model/Instrument");
 var config_1 = __importDefault(require("../../database/config"));
 var MongoInstrMarketEntryService = /** @class */ (function () {
     function MongoInstrMarketEntryService(instrumentService, logger) {
-        /**
-         * @param {MongoInstrumentService} instrumentService
-         */
-        this.allowedInstr = ["BUMECH", "ONEMORE"];
         this._instrumentService = instrumentService;
         this._logger = logger;
     }
@@ -127,7 +123,7 @@ var MongoInstrMarketEntryService = /** @class */ (function () {
                         cntInt = 0;
                         _b.label = 10;
                     case 10:
-                        if (!(cntInt++ < 10)) return [3 /*break*/, 13];
+                        if (!(cntInt++ < 40)) return [3 /*break*/, 13];
                         return [4 /*yield*/, InstrumentMarketEntrySchema_1.default.find(search).sort(sortParams).limit(limit)];
                     case 11:
                         results = _b.sent();

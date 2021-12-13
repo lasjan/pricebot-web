@@ -1,4 +1,5 @@
 import express from 'express';
+import { NOLServerException } from '../../common/exception/NOLServerException';
 import { MongoInstrumentService } from '../../common/service/dal/MongoInstrumentService';
 import { MongoTokenService } from '../../common/service/dal/MongoTokenService';
 import { sleep } from '../../common/utils';
@@ -6,15 +7,7 @@ var instrumentRouter = express.Router();
 let instrumentService = new MongoInstrumentService();
 //-------------------TOKEN-----------------------------
 
-instrumentRouter.get('/anynew',async (req, res)=>{
-    let instruments = await instrumentService.getInstrument(
-        {
-            Status:"NEW"
-        }
-    );
-
-    res.send(`{any:${instruments!=null && instruments.length>0}}`);
-});
+//--RESTFUL--//
 instrumentRouter.get('/',async (req, res)=>{
     let instruments = await instrumentService.getInstrument(
         {},
@@ -24,6 +17,61 @@ instrumentRouter.get('/',async (req, res)=>{
         }
     );
     res.send(instruments);
+});
+instrumentRouter.get('/:id',async (req, res)=>{
+    try{
+        let instruments = await instrumentService.getInstrument(
+            {
+                InstrumentId:req.params['id']
+            },
+            {
+            }
+        );
+        res.send(instruments);
+    }
+    catch(ex){
+        if(ex instanceof NOLServerException) {
+            res.writeHead(404, {"Content-Type": "text/plain"});
+            res.write(ex.message);
+            res.end();
+        }
+        else {
+            console.log(ex);
+            res.sendStatus(400);
+        }
+    }
+});
+
+instrumentRouter.post('/',async (req, res)=>{
+    console.log(req.body);
+    try{
+        await instrumentService.addInstrument(req.body);
+        res.sendStatus(200);
+    }catch(ex){
+        console.log(ex);
+        res.sendStatus(400);
+    }   
+});
+instrumentRouter.put('/:id',async (req, res)=>{
+    console.log(req.body);
+    try{
+        await instrumentService.setInstrument(req.params.id,req.body);
+        res.sendStatus(200);
+    }catch(ex){
+        console.log(ex);
+        res.sendStatus(400);
+    }   
+});
+
+//--EXTRA--//
+instrumentRouter.get('/anynew',async (req, res)=>{
+    let instruments = await instrumentService.getInstrument(
+        {
+            Status:"NEW"
+        }
+    );
+
+    res.send(`{any:${instruments!=null && instruments.length>0}}`);
 });
 
 instrumentRouter.get('/status/:status/top/:top',async (req, res)=>{
@@ -56,26 +104,4 @@ instrumentRouter.get('instrument/:instrument/status/:status/top/:top',async (req
 
     res.send(instruments);
 });
-
-instrumentRouter.post('/',async (req, res)=>{
-    console.log(req.body);
-    try{
-        await instrumentService.addInstrument(req.body);
-        res.sendStatus(200);
-    }catch(ex){
-        console.log(ex);
-        res.sendStatus(400);
-    }   
-});
-instrumentRouter.put('/',async (req, res)=>{
-    console.log(req.body);
-    try{
-        await instrumentService.setInstrument(req.body);
-        res.sendStatus(200);
-    }catch(ex){
-        console.log(ex);
-        res.sendStatus(400);
-    }   
-});
-
 export { instrumentRouter } 

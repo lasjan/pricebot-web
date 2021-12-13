@@ -15,7 +15,7 @@ export class MiddleLogger{
       const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
       const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
       const body = JSON.stringify(req.body??"");
-      console.log(this.excludedIps);
+      //console.log(this.excludedIps);
       if(this.excludedIps.indexOf(ip) < 0){
         this.dbLogger.InternalLog(type,ip,fullUrl,body,auxInfo1,auxInfo2);
       }

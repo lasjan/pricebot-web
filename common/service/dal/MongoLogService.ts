@@ -26,6 +26,12 @@ export class MongoLogger{
             Slot3:          arg2,  
             TimeStamp:      now
         });
-        await dbEntry.save();
+        try{
+            await dbEntry.save();
+        }
+        catch(error)
+        {
+            console.log(error);
+        }
     }
 }

@@ -16,7 +16,7 @@ export class MongoInstrMarketEntryService{
     /**
      * @param {MongoInstrumentService} instrumentService
      */
-    allowedInstr: Array<string> = ["BUMECH","ONEMORE"];
+
     private _instrumentService: MongoInstrumentService;
     private _logger: MongoLogger;
     constructor(instrumentService: MongoInstrumentService,
@@ -81,7 +81,7 @@ export class MongoInstrMarketEntryService{
         { 
             this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"noResultsMKT",JSON.stringify(search),"");
             let cntInt = 0 ;
-            while(cntInt++<10){
+            while(cntInt++<40){
                 results = await InstrMarketEntryCollection.find(search).sort(sortParams).limit(limit);
                 this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"searchLoopMKT",JSON.stringify(results),cntInt.toString());
                 if(!(results == null || !results.length)){

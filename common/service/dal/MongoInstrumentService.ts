@@ -9,6 +9,7 @@ import "reflect-metadata";
 import { SearchOptions } from "./MongoSearchOptions";
 import { InstrumentSearchParams } from "./model/InstrumentSearchParams";
 import mongoDefaultConnection from "../../database/config";
+import { NOLServerException } from "../../exception/NOLServerException";
 @Service()
 export class MongoInstrumentService {
 
@@ -24,12 +25,27 @@ export class MongoInstrumentService {
         const sortDirection= options.SortDirection;
         const limit = options.Top??0;
             //console.log(search);
-        return await InstrumentModelCollection.find(search).sort({sortField: sortDirection}).limit(limit);
+        let results = await InstrumentModelCollection.find(search).sort({sortField: sortDirection}).limit(limit);
+        if(results == null || !results.length)
+        { 
+            throw new NOLServerException("Not found");
+        }
+        let mapped = results.map(r=>{
+            let smth =  {
+              InstrumentId:r.InstrumentId,
+              Status:r.Status,
+              ModifyDate:r.ModifyDate,
+              TimeStamp:r.TimeStamp
+            }  
+            return smth;
+          });
+        return mapped;
     }
     async addInstrument(instrument:Instrument):Promise<any>{
         await mongoDefaultConnection();
         
         let now = getCurrentDate();
+        console.log(now);
         let dbEntry = new InstrumentModelCollection({
             InstrumentId:       instrument.InstrumentId,
             Status:             instrument.Status,
@@ -42,11 +58,16 @@ export class MongoInstrumentService {
             await dbEntry.save();
         }
     }
-    async setInstrument(instrument:Instrument):Promise<any>{
-        //await connect(getMDBConnString(process.env.DB_NOL3_USER!,process.env.DB_NOL3_USER_PASS!));
+    async setInstrument(id:string,instrument:Instrument):Promise<any>{
         await mongoDefaultConnection();
-        let now = getCurrentDate();;
-        await InstrumentModelCollection.updateOne({InstrumentId:instrument.InstrumentId},{Status:instrument.Status});
+        let now = getCurrentDate();
+        var item = await InstrumentModelCollection.findOne({InstrumentId:id});
+        console.log("-->" + item);
+        item.InstrumentId = instrument.InstrumentId;
+        item.Status = instrument.Status;
+        item.ModifyDate = now;
+
+        await item.save();
 
     }
 }

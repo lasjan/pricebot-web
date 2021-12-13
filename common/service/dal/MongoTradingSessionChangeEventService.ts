@@ -50,9 +50,9 @@ export class MongoTradingSessionChangeEventService{
             await dbEntry.save();
         }
         catch(ex:any){
-            if(ex instanceof Error){
-            this._loggerService.InternalLog("E","MongoTradingSessionChangeEventService.addTradingSessionChangeEvent",(ex as Error).message,dbEntry,"","");
-        }
+                if(ex instanceof Error){
+                this._loggerService.InternalLog("E","MongoTradingSessionChangeEventService.addTradingSessionChangeEvent",(ex as Error).message,dbEntry,"","");
+            }
         }
     }
     async getTradingSessionChangeEventWithMarketEntry(

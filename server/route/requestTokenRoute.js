@@ -39,75 +39,71 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sessionEntryRouter = void 0;
+exports.requestTokenRouter = void 0;
 var express_1 = __importDefault(require("express"));
-var MongoTradingSessionEntryService_1 = require("../../common/service/dal/MongoTradingSessionEntryService");
-var sessionEntryRouter = express_1.default.Router();
-exports.sessionEntryRouter = sessionEntryRouter;
-var tradingSessionEntryService = new MongoTradingSessionEntryService_1.MongoTradingSessionEntryService();
-//-----------------SESSION---------------------------------
-sessionEntryRouter.get('/instrument/:instrument/top/:top', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var top_1, dbEntries, ex_1;
+var RequestTokenParamBuilder_1 = require("../../common/service/dal/model/search-builders/RequestTokenParamBuilder");
+var MongoRequestTokenService_1 = require("../../common/service/dal/MongoRequestTokenService");
+var requestTokenRouter = express_1.default.Router();
+exports.requestTokenRouter = requestTokenRouter;
+var requestTokeService = new MongoRequestTokenService_1.MongoRequestTokenService();
+//-------------------TOKEN-----------------------------
+requestTokenRouter.get('/id/:id/type/:type/state/:state/requestor/:requestor', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var searchParams, tokens;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 2, , 3]);
-                top_1 = Number(req.params['top']);
-                return [4 /*yield*/, tradingSessionEntryService.getTradingSessionEntry({
-                        InstrumentId: req.params["instrument"]
-                    }, {
-                        Top: top_1,
-                        SortBy: "TimeStamp",
-                        SortDirection: "desc"
-                    })];
+                searchParams = (0, RequestTokenParamBuilder_1.BuildRequestTokenParams)(req.params['id'], req.params['type'], req.params['state'], req.params['requestor']);
+                return [4 /*yield*/, requestTokeService.getToken(searchParams)];
             case 1:
-                dbEntries = _a.sent();
-                res.send(dbEntries);
-                return [3 /*break*/, 3];
+                tokens = _a.sent();
+                res.send(tokens);
+                return [2 /*return*/];
+        }
+    });
+}); });
+requestTokenRouter.post('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var newToken, ex_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                console.log(req.body);
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, requestTokeService.addToken(req.body)];
             case 2:
+                newToken = _a.sent();
+                res.send(newToken);
+                return [3 /*break*/, 4];
+            case 3:
                 ex_1 = _a.sent();
-                res.send(ex_1);
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
+                console.log(ex_1);
+                res.sendStatus(400);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
         }
     });
 }); });
-sessionEntryRouter.get('/event', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var dbEntries, ex_2;
+requestTokenRouter.put('/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var newToken, ex_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, tradingSessionEntryService.getSessionEventTable()];
+                console.log(req.body);
+                _a.label = 1;
             case 1:
-                dbEntries = _a.sent();
-                res.send(dbEntries);
-                return [3 /*break*/, 3];
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, requestTokeService.setToken(req.params.id, req.body)];
             case 2:
+                newToken = _a.sent();
+                res.send(newToken);
+                return [3 /*break*/, 4];
+            case 3:
                 ex_2 = _a.sent();
-                res.send(ex_2);
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
-        }
-    });
-}); });
-sessionEntryRouter.post('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var ex_3;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, tradingSessionEntryService.addTradingSessionEntry(req.body)];
-            case 1:
-                _a.sent();
-                res.sendStatus(200);
-                return [3 /*break*/, 3];
-            case 2:
-                ex_3 = _a.sent();
-                console.log(ex_3);
-                res.send(ex_3);
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
+                console.log(ex_2);
+                res.sendStatus(400);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
         }
     });
 }); });

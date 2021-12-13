@@ -52,25 +52,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.instrumentRouter = void 0;
 var express_1 = __importDefault(require("express"));
+var NOLServerException_1 = require("../../common/exception/NOLServerException");
 var MongoInstrumentService_1 = require("../../common/service/dal/MongoInstrumentService");
 var instrumentRouter = express_1.default.Router();
 exports.instrumentRouter = instrumentRouter;
 var instrumentService = new MongoInstrumentService_1.MongoInstrumentService();
 //-------------------TOKEN-----------------------------
-instrumentRouter.get('/anynew', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var instruments;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, instrumentService.getInstrument({
-                    Status: "NEW"
-                })];
-            case 1:
-                instruments = _a.sent();
-                res.send("{any:" + (instruments != null && instruments.length > 0) + "}");
-                return [2 /*return*/];
-        }
-    });
-}); });
+//--RESTFUL--//
 instrumentRouter.get('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var instruments;
     return __generator(this, function (_a) {
@@ -82,6 +70,96 @@ instrumentRouter.get('/', function (req, res) { return __awaiter(void 0, void 0,
             case 1:
                 instruments = _a.sent();
                 res.send(instruments);
+                return [2 /*return*/];
+        }
+    });
+}); });
+instrumentRouter.get('/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var instruments, ex_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, instrumentService.getInstrument({
+                        InstrumentId: req.params['id']
+                    }, {})];
+            case 1:
+                instruments = _a.sent();
+                res.send(instruments);
+                return [3 /*break*/, 3];
+            case 2:
+                ex_1 = _a.sent();
+                if (ex_1 instanceof NOLServerException_1.NOLServerException) {
+                    res.writeHead(404, { "Content-Type": "text/plain" });
+                    res.write(ex_1.message);
+                    res.end();
+                }
+                else {
+                    console.log(ex_1);
+                    res.sendStatus(400);
+                }
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
+instrumentRouter.post('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var ex_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                console.log(req.body);
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, instrumentService.addInstrument(req.body)];
+            case 2:
+                _a.sent();
+                res.sendStatus(200);
+                return [3 /*break*/, 4];
+            case 3:
+                ex_2 = _a.sent();
+                console.log(ex_2);
+                res.sendStatus(400);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+instrumentRouter.put('/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var ex_3;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                console.log(req.body);
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, instrumentService.setInstrument(req.params.id, req.body)];
+            case 2:
+                _a.sent();
+                res.sendStatus(200);
+                return [3 /*break*/, 4];
+            case 3:
+                ex_3 = _a.sent();
+                console.log(ex_3);
+                res.sendStatus(400);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+//--EXTRA--//
+instrumentRouter.get('/anynew', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var instruments;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, instrumentService.getInstrument({
+                    Status: "NEW"
+                })];
+            case 1:
+                instruments = _a.sent();
+                res.send("{any:" + (instruments != null && instruments.length > 0) + "}");
                 return [2 /*return*/];
         }
     });
@@ -123,52 +201,6 @@ instrumentRouter.get('instrument/:instrument/status/:status/top/:top', function 
                 instruments = _a.sent();
                 res.send(instruments);
                 return [2 /*return*/];
-        }
-    });
-}); });
-instrumentRouter.post('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var ex_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                console.log(req.body);
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, instrumentService.addInstrument(req.body)];
-            case 2:
-                _a.sent();
-                res.sendStatus(200);
-                return [3 /*break*/, 4];
-            case 3:
-                ex_1 = _a.sent();
-                console.log(ex_1);
-                res.sendStatus(400);
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
-        }
-    });
-}); });
-instrumentRouter.put('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var ex_2;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                console.log(req.body);
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, instrumentService.setInstrument(req.body)];
-            case 2:
-                _a.sent();
-                res.sendStatus(200);
-                return [3 /*break*/, 4];
-            case 3:
-                ex_2 = _a.sent();
-                console.log(ex_2);
-                res.sendStatus(400);
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
         }
     });
 }); });
