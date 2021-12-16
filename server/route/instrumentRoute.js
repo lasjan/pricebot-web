@@ -85,7 +85,14 @@ instrumentRouter.get('/:id', function (req, res) { return __awaiter(void 0, void
                     }, {})];
             case 1:
                 instruments = _a.sent();
-                res.send(instruments);
+                if (instruments == null || instruments.length == 0) {
+                    res.writeHead(404, { "Content-Type": "text/plain" });
+                    res.write("Instrument not found");
+                    res.end();
+                }
+                else {
+                    res.send(instruments[0]);
+                }
                 return [3 /*break*/, 3];
             case 2:
                 ex_1 = _a.sent();

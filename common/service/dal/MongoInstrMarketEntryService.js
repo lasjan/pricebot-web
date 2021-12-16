@@ -42,13 +42,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MongoInstrMarketEntryService = void 0;
 var NOLServerException_1 = require("../../exception/NOLServerException");
 var InstrumentMarketEntrySchema_1 = __importDefault(require("./model/InstrumentMarketEntrySchema"));
-var utils_1 = require("../../utils");
 var Instrument_1 = require("../../model/Instrument");
 var config_1 = __importDefault(require("../../database/config"));
+var utils_1 = require("../../utils");
+var RequestToken_1 = require("../../model/RequestToken");
 var MongoInstrMarketEntryService = /** @class */ (function () {
-    function MongoInstrMarketEntryService(instrumentService, logger) {
+    function MongoInstrMarketEntryService(instrumentService, logger, tokenService) {
         this._instrumentService = instrumentService;
         this._logger = logger;
+        this._tokenService = tokenService;
     }
     MongoInstrMarketEntryService.prototype.getInstrumentMarketEntry = function (search, options) {
         var _a;
@@ -59,7 +61,7 @@ var MongoInstrMarketEntryService = /** @class */ (function () {
             SortDirection: "desc"
         }; }
         return __awaiter(this, void 0, void 0, function () {
-            var sortDirection, limit, sortParams, instrument, freshInstrument, cntInt, results, cntInt, mapped;
+            var sortDirection, limit, sortParams, instrument, freshInstrument, now, token, cntInt, results, cntInt, mapped;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, (0, config_1.default)()];
@@ -70,6 +72,7 @@ var MongoInstrMarketEntryService = /** @class */ (function () {
                         sortParams = sortDirection + options.SortBy;
                         console.log(options);
                         console.log(sortParams);
+                        console.log(search);
                         return [4 /*yield*/, this._instrumentService.getInstrument({
                                 InstrumentId: search.InstrumentId
                             })];
@@ -79,14 +82,21 @@ var MongoInstrMarketEntryService = /** @class */ (function () {
                         if (!(instrument == null || instrument.length == 0)) return [3 /*break*/, 8];
                         this._logger.InternalLog("D", "getInstrumentMarketEntry", JSON.stringify(instrument), "not found", JSON.stringify(search), "");
                         freshInstrument = new Instrument_1.Instrument({ InstrumentId: search.InstrumentId });
-                        return [4 /*yield*/, this._instrumentService.addInstrument(freshInstrument)];
+                        now = (0, utils_1.getCurrentDate)();
+                        token = new RequestToken_1.RequestToken({
+                            Type: "PUTINSTRUMENT",
+                            Requestor: "WEBAPI",
+                            RequestParams: { InstrumentId: search.InstrumentId, AddToListIfValid: true },
+                            TimeStamp: now.toString()
+                        });
+                        return [4 /*yield*/, this._tokenService.addToken(token)];
                     case 3:
                         _b.sent();
                         this._logger.InternalLog("D", "getInstrumentMarketEntry", JSON.stringify(instrument), "saved", JSON.stringify(search), "");
                         cntInt = 0;
                         _b.label = 4;
                     case 4:
-                        if (!(cntInt++ < 30)) return [3 /*break*/, 7];
+                        if (!(cntInt++ < 10)) return [3 /*break*/, 7];
                         return [4 /*yield*/, this._instrumentService.getInstrument({
                                 InstrumentId: search.InstrumentId
                             })];
@@ -107,6 +117,7 @@ var MongoInstrMarketEntryService = /** @class */ (function () {
                         this._logger.InternalLog("D", "getInstrumentMarketEntry", JSON.stringify(instrument), "loop finish", JSON.stringify(search), cntInt.toString());
                         _b.label = 8;
                     case 8:
+                        console.log(instrument);
                         if (instrument != null && instrument.length != 0) {
                             if (instrument[0].Status == "REJECTED") {
                                 ;
@@ -123,7 +134,7 @@ var MongoInstrMarketEntryService = /** @class */ (function () {
                         cntInt = 0;
                         _b.label = 10;
                     case 10:
-                        if (!(cntInt++ < 40)) return [3 /*break*/, 13];
+                        if (!(cntInt++ < 15)) return [3 /*break*/, 13];
                         return [4 /*yield*/, InstrumentMarketEntrySchema_1.default.find(search).sort(sortParams).limit(limit)];
                     case 11:
                         results = _b.sent();

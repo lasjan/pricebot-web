@@ -40,7 +40,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MongoRequestTokenService = void 0;
-var crypto_1 = require("crypto");
+//import { randomUUID } from "crypto";
+var uuid_1 = require("uuid");
 var config_1 = __importDefault(require("../../database/config"));
 var utils_1 = require("../../utils");
 var RequestTokenSchema_1 = __importDefault(require("./model/RequestTokenSchema"));
@@ -85,11 +86,13 @@ var MongoRequestTokenService = /** @class */ (function () {
             var query, result;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, (0, config_1.default)()];
+                    case 0:
+                        console.log(token);
+                        return [4 /*yield*/, (0, config_1.default)()];
                     case 1:
                         _b.sent();
                         query = {
-                            Id: (_a = token.Id) !== null && _a !== void 0 ? _a : (0, crypto_1.randomUUID)(),
+                            Id: (_a = token.Id) !== null && _a !== void 0 ? _a : (0, uuid_1.v4)(),
                             Type: token.Type,
                             Requestor: token.Requestor,
                             RequestParams: JSON.stringify(token.RequestParams),

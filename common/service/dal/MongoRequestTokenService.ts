@@ -1,4 +1,5 @@
-import { randomUUID } from "crypto";
+//import { randomUUID } from "crypto";
+import {v4 as uuidv4} from "uuid";
 import mongoDefaultConnection from "../../database/config";
 import { RequestToken } from "../../model/RequestToken";
 import { getCurrentDate } from "../../utils";
@@ -32,10 +33,11 @@ export class MongoRequestTokenService{
         return null;
     }
     async addToken(token:RequestToken): Promise<any> {
+        console.log(token);
         await mongoDefaultConnection();
         let query = 
         {   
-            Id:             token.Id??randomUUID(),
+            Id:             token.Id??uuidv4(),
             Type:           token.Type,
             Requestor:      token.Requestor,
             RequestParams:  JSON.stringify(token.RequestParams),

@@ -53,11 +53,11 @@ exports.marketEntryRouter = marketEntryRouter;
 marketEntryService: MongoInstrMarketEntryService_1.MongoInstrMarketEntryService;
 var serviceInstance = typedi_1.default.get(MongoInstrumentService_1.MongoInstrumentService);
 var loggerInstance = typedi_1.default.get(MongoLogService_1.MongoLogger);
-var marketInstrumentEntryService = new MongoInstrMarketEntryService_1.MongoInstrMarketEntryService(serviceInstance, loggerInstance);
-var marketEntryService = new MongoMarketEntryService_1.MongoMarketEntryService(loggerInstance);
 var tokenRequestService = new MongoRequestTokenService_1.MongoRequestTokenService();
-marketEntryRouter.get('/legacy/instrument/:instrument/type/:type/top/:top', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var top_1, dbEntries, ex_1;
+var marketInstrumentEntryService = new MongoInstrMarketEntryService_1.MongoInstrMarketEntryService(serviceInstance, loggerInstance, tokenRequestService);
+var marketEntryService = new MongoMarketEntryService_1.MongoMarketEntryService(loggerInstance);
+marketEntryRouter.get('/instrument/:instrument/type/:type/top/:top', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var top_1, dbEntries, ex_1, error;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -83,15 +83,19 @@ marketEntryRouter.get('/legacy/instrument/:instrument/type/:type/top/:top', func
                     res.end();
                 }
                 else {
+                    error = ex_1;
+                    loggerInstance.InternalLog("E", "marketEntryRouter", req.url, error.message, "", "");
                     console.log(ex_1);
-                    res.sendStatus(400);
+                    res.writeHead(400, { "Content-Type": "text/plain" });
+                    res.write(error);
+                    res.end();
                 }
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
     });
 }); });
-marketEntryRouter.get('/instrument/:instrument/type/:type/top/:top', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+marketEntryRouter.get('/v2/instrument/:instrument/type/:type/top/:top', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var top_2, dbEntries, ex_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -108,7 +112,14 @@ marketEntryRouter.get('/instrument/:instrument/type/:type/top/:top', function (r
                     })];
             case 1:
                 dbEntries = _a.sent();
-                res.send(dbEntries);
+                if (dbEntries == null || dbEntries.length == 0) {
+                    res.writeHead(404, { "Content-Type": "text/plain" });
+                    res.write("Market entry not found");
+                    res.end();
+                }
+                else {
+                    res.send(dbEntries);
+                }
                 return [3 /*break*/, 3];
             case 2:
                 ex_2 = _a.sent();

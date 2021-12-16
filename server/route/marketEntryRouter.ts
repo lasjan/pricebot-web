@@ -12,10 +12,11 @@ marketEntryService : MongoInstrMarketEntryService;
 
 const serviceInstance = Container.get(MongoInstrumentService);
 const loggerInstance = Container.get(MongoLogger);
-let marketInstrumentEntryService = new MongoInstrMarketEntryService(serviceInstance,loggerInstance);
-let marketEntryService = new MongoMarketEntryService(loggerInstance);
 let tokenRequestService = new MongoRequestTokenService();
-marketEntryRouter.get('/legacy/instrument/:instrument/type/:type/top/:top',async (req, res)=>{
+let marketInstrumentEntryService = new MongoInstrMarketEntryService(serviceInstance,loggerInstance,tokenRequestService);
+let marketEntryService = new MongoMarketEntryService(loggerInstance);
+
+marketEntryRouter.get('/instrument/:instrument/type/:type/top/:top',async (req, res)=>{
     try{
         let top = Number(req.params['top']);
         var dbEntries = await marketInstrumentEntryService.getInstrumentMarketEntry(
@@ -37,13 +38,17 @@ marketEntryRouter.get('/legacy/instrument/:instrument/type/:type/top/:top',async
             res.end();
         }
         else {
+            let error = ex as Error ;
+            loggerInstance.InternalLog("E","marketEntryRouter",req.url,error.message,"","");
             console.log(ex);
-            res.sendStatus(400);
+            res.writeHead(400, {"Content-Type": "text/plain"});
+            res.write(error);
+            res.end();
         }
     }
 
 });
-marketEntryRouter.get('/instrument/:instrument/type/:type/top/:top',async (req, res)=>{
+marketEntryRouter.get('/v2/instrument/:instrument/type/:type/top/:top',async (req, res)=>{
     try{
         let top = Number(req.params['top']);
         var dbEntries = await marketEntryService.getMarketEntry(
@@ -56,7 +61,15 @@ marketEntryRouter.get('/instrument/:instrument/type/:type/top/:top',async (req, 
             SortBy:"TimeStamp",
             SortDirection:"desc"
         });
-        res.send(dbEntries);
+        if(dbEntries == null || dbEntries.length == 0 )
+        {
+            res.writeHead(404, {"Content-Type": "text/plain"});
+            res.write("Market entry not found");
+            res.end();
+        }
+        else {
+            res.send(dbEntries);
+        }
     }
     catch(ex){
         if(ex instanceof NOLServerException) {

@@ -27,7 +27,15 @@ instrumentRouter.get('/:id',async (req, res)=>{
             {
             }
         );
-        res.send(instruments);
+        if(instruments == null || instruments.length == 0 )
+        {
+            res.writeHead(404, {"Content-Type": "text/plain"});
+            res.write("Instrument not found");
+            res.end();
+        }
+        else {
+            res.send(instruments[0]);
+        }
     }
     catch(ex){
         if(ex instanceof NOLServerException) {

@@ -51,7 +51,6 @@ var utils_1 = require("../../utils");
 var InstrumentSchema_1 = __importDefault(require("./model/InstrumentSchema"));
 require("reflect-metadata");
 var config_1 = __importDefault(require("../../database/config"));
-var NOLServerException_1 = require("../../exception/NOLServerException");
 var MongoInstrumentService = /** @class */ (function () {
     function MongoInstrumentService() {
     }
@@ -75,9 +74,6 @@ var MongoInstrumentService = /** @class */ (function () {
                         return [4 /*yield*/, InstrumentSchema_1.default.find(search).sort({ sortField: sortDirection }).limit(limit)];
                     case 2:
                         results = _b.sent();
-                        if (results == null || !results.length) {
-                            throw new NOLServerException_1.NOLServerException("Not found");
-                        }
                         mapped = results.map(function (r) {
                             var smth = {
                                 InstrumentId: r.InstrumentId,

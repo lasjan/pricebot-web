@@ -7,11 +7,12 @@ import { SearchOptions } from "./MongoSearchOptions";
 import { MongoInstrumentService } from "./MongoInstrumentService";
 import { MongoLogger } from "./MongoLogService";
 import { Container, Service } from 'typedi';
-import { getMDBConnString, sleep } from "../../utils";
 import { verify } from "crypto";
 import { Instrument } from "../../model/Instrument";
 import mongoDefaultConnection from "../../database/config";
-
+import { MongoRequestTokenService } from "./MongoRequestTokenService";
+import { getCurrentDate, sleep } from "../../utils";
+import { RequestToken } from "../../model/RequestToken";
 export class MongoInstrMarketEntryService{
     /**
      * @param {MongoInstrumentService} instrumentService
@@ -19,10 +20,13 @@ export class MongoInstrMarketEntryService{
 
     private _instrumentService: MongoInstrumentService;
     private _logger: MongoLogger;
+    private _tokenService:MongoRequestTokenService;
     constructor(instrumentService: MongoInstrumentService,
-        logger:MongoLogger) {
+        logger:MongoLogger,
+        tokenService:MongoRequestTokenService) {
         this._instrumentService = instrumentService;
         this._logger = logger;
+        this._tokenService = tokenService;
     }
     async getInstrumentMarketEntry(
         search:InstrumentMarketSearchParams = {},
@@ -41,6 +45,7 @@ export class MongoInstrMarketEntryService{
         const sortParams = sortDirection + options.SortBy;
         console.log(options);
         console.log(sortParams);
+        console.log(search);
         let instrument = await this._instrumentService.getInstrument(
         {
             InstrumentId:search.InstrumentId
@@ -49,10 +54,17 @@ export class MongoInstrMarketEntryService{
         if(instrument == null || instrument.length == 0){
             this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"not found",JSON.stringify(search),"");
             let freshInstrument = new Instrument({InstrumentId:search.InstrumentId});
-            await this._instrumentService.addInstrument(freshInstrument);   
+            let now = getCurrentDate();
+            let token = new RequestToken({
+                Type: "PUTINSTRUMENT",
+                Requestor:"WEBAPI",
+                RequestParams: {InstrumentId:search.InstrumentId,AddToListIfValid:true},
+                TimeStamp:now.toString()
+            });
+            await this._tokenService.addToken(token);
             this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"saved",JSON.stringify(search),"");
             let cntInt = 0 ;
-            while(cntInt++<30){
+            while(cntInt++<10){
 
                 instrument = await this._instrumentService.getInstrument(
                     {
@@ -69,6 +81,7 @@ export class MongoInstrMarketEntryService{
             }
             this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"loop finish",JSON.stringify(search),cntInt.toString());
         }
+        console.log(instrument);
         if(instrument != null && instrument.length != 0){
             if(instrument[0].Status == "REJECTED"){;
                 this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"rejected",JSON.stringify(search),"");
@@ -81,7 +94,7 @@ export class MongoInstrMarketEntryService{
         { 
             this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"noResultsMKT",JSON.stringify(search),"");
             let cntInt = 0 ;
-            while(cntInt++<40){
+            while(cntInt++<15){
                 results = await InstrMarketEntryCollection.find(search).sort(sortParams).limit(limit);
                 this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"searchLoopMKT",JSON.stringify(results),cntInt.toString());
                 if(!(results == null || !results.length)){

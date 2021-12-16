@@ -26,10 +26,7 @@ export class MongoInstrumentService {
         const limit = options.Top??0;
             //console.log(search);
         let results = await InstrumentModelCollection.find(search).sort({sortField: sortDirection}).limit(limit);
-        if(results == null || !results.length)
-        { 
-            throw new NOLServerException("Not found");
-        }
+
         let mapped = results.map(r=>{
             let smth =  {
               InstrumentId:r.InstrumentId,

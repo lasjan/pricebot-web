@@ -2,7 +2,7 @@ export class RequestToken{
     Id!: string;
     Type!: string;
     Requestor!: string;
-    RequestParams!: string;
+    RequestParams!: object;
     State!: string;
     Resolver!: string;
     Response!: string;
