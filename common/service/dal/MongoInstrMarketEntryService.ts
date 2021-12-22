@@ -51,10 +51,11 @@ export class MongoInstrMarketEntryService{
             InstrumentId:search.InstrumentId
         });
         this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"search",JSON.stringify(search),"");
-        if(instrument == null || instrument.length == 0){
+        let now = getCurrentDate();
+        if(instrument == null || instrument.length == 0 || (instrument.length > 0 && instrument[0].Status == "FETCHED")){
             this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"not found",JSON.stringify(search),"");
             let freshInstrument = new Instrument({InstrumentId:search.InstrumentId});
-            let now = getCurrentDate();
+            
             let token = new RequestToken({
                 Type: "PUTINSTRUMENT",
                 Requestor:"WEBAPI",
@@ -88,6 +89,39 @@ export class MongoInstrMarketEntryService{
                 throw new NOLServerException("Bad instrument name");
             }
         }
+        let resultsMkt = await InstrMarketEntryCollection.find(search).sort(sortParams).limit(limit);
+        this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"searchMKT",JSON.stringify(search),JSON.stringify(resultsMkt));
+        if(!(resultsMkt == null || !resultsMkt.length))
+        { 
+            return resultsMkt;
+        }
+
+        let tokenMkt = new RequestToken({
+            Type: "GETMARKETDATA",
+            Requestor:"WEBAPI",
+            RequestParams: {InstrumentId:search.InstrumentId,EntryType:search.Type},
+            TimeStamp:now.toString()
+        });
+        var tokenMarketId = await this._tokenService.addToken(tokenMkt);
+        this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"searchTOKEN",JSON.stringify(search),tokenMarketId);
+
+
+        let cntInt = 0 ;
+
+        while(cntInt++<15){
+            let results = await this._tokenService.getToken({Id:tokenMarketId,State:"RESOLVED"});
+            this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"searchTOKEN",JSON.stringify(results),cntInt.toString());
+            if(!(results == null || !results.length)){
+                this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"searchTOKEN",JSON.stringify(results),cntInt.toString());
+                let fakeArr = [];
+                let mapped = new InstrumentMarketEntry(JSON.parse(results[0].Response));
+                fakeArr.push(mapped);
+                return fakeArr;
+            }
+            await sleep(1000);
+        }
+        return null;
+        /*
         let results = await InstrMarketEntryCollection.find(search).sort(sortParams).limit(limit);
         this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"searchMKT",JSON.stringify(search),JSON.stringify(results));
         if(results == null || !results.length)
@@ -105,22 +139,8 @@ export class MongoInstrMarketEntryService{
                 await sleep(1000);
             }
         }
-       
-        let mapped = results.map(r=>{
-            let smth =  {
-              InstrumentId:r.InstrumentId,
-              Type:r.Type,
-              DateTime:r.DateTime,
-              TimeStamp: r.TimeStamp,
-              Price:r.Price,
-              Turnover:r.Turnover,
-              OrdersCount:r.OrdersCount
-            }  
-            return smth;
-          });
-          this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"mapped",JSON.stringify(search),JSON.stringify(mapped));
-              
-          return mapped;
+       */
+
     }
 
     async addInstrumentMarketEntry(entry:InstrumentMarketEntry):Promise<any>{
@@ -159,4 +179,5 @@ export class MongoInstrMarketEntryService{
 
         await InstrMarketEntryCollection.findOneAndUpdate(query,update,options);
     }
+
 } 

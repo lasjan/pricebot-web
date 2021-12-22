@@ -41,7 +41,7 @@ var serverStart = function () {
         res.status(500).send('Something broke!');
     });
     app.listen(3000, function () {
-        console.log('Example app listening on port 3000!');
+        console.log('Example app listening on port 3005!');
     });
 };
 exports.default = serverStart;

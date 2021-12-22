@@ -104,6 +104,16 @@ marketEntryRouter.post('/',async (req, res)=>{
         res.sendStatus(400);
     } 
 })
+marketEntryRouter.post('/multi',async (req, res)=>{
+    try {
+        await marketEntryService.addInstrumentMarketEntryMulti(req.body)
+
+    res.sendStatus(200);}
+    catch(ex){
+        console.log(ex);
+        res.sendStatus(400);
+    } 
+})
 
 
 export { marketEntryRouter } 

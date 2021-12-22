@@ -33,14 +33,14 @@ export class MongoRequestTokenService{
         return null;
     }
     async addToken(token:RequestToken): Promise<any> {
-        console.log(token);
+        console.log("this is roken: " +token);
         await mongoDefaultConnection();
         let query = 
         {   
             Id:             token.Id??uuidv4(),
             Type:           token.Type,
             Requestor:      token.Requestor,
-            RequestParams:  JSON.stringify(token.RequestParams),
+            RequestParams:  token.RequestParams,
             Resolver:       token.Resolver,
             State:          "NEW",
             TimeStamp:      token.TimeStamp
@@ -55,11 +55,11 @@ export class MongoRequestTokenService{
         console.log("-->" + item);
         let now = getCurrentDate();
         item.State = token.State;
-        item.Response = JSON.stringify(token.Response);
+        item.RequestParams = token.RequestParams;
         item.Type = token.Type;
         item.Requestor = token.Requestor;
+        item.Response = token.Response;
         item.Resolver = token.Resolver,
-        item.Response = JSON.stringify(token.Response);
         item.TimeStamp = token.TimeStamp??now;
 
         await item.save();

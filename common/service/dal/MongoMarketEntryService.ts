@@ -72,4 +72,10 @@ export class MongoMarketEntryService{
         let options = { upsert: true, new: true, setDefaultsOnInsert: true };
         await InstrMarketEntryCollection.findOneAndUpdate(query,update,options);
     }
+
+    async addInstrumentMarketEntryMulti(entries:[]):Promise<any>{
+        await mongoDefaultConnection();
+        console.log(entries);
+        await InstrMarketEntryCollection.insertMany(entries);
+    }
 }

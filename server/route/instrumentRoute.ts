@@ -18,6 +18,7 @@ instrumentRouter.get('/',async (req, res)=>{
     );
     res.send(instruments);
 });
+
 instrumentRouter.get('/:id',async (req, res)=>{
     try{
         let instruments = await instrumentService.getInstrument(
@@ -72,16 +73,6 @@ instrumentRouter.put('/:id',async (req, res)=>{
 });
 
 //--EXTRA--//
-instrumentRouter.get('/anynew',async (req, res)=>{
-    let instruments = await instrumentService.getInstrument(
-        {
-            Status:"NEW"
-        }
-    );
-
-    res.send(`{any:${instruments!=null && instruments.length>0}}`);
-});
-
 instrumentRouter.get('/status/:status/top/:top',async (req, res)=>{
     let top = Number(req.params['top']);
     let instruments = await instrumentService.getInstrument(

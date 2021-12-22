@@ -5,7 +5,7 @@ export class RequestToken{
     RequestParams!: object;
     State!: string;
     Resolver!: string;
-    Response!: string;
+    Response!: object;
     TimeStamp!:string;
     public constructor(init?:Partial<RequestToken>) {
         Object.assign(this, init);
