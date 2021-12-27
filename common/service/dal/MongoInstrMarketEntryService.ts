@@ -48,7 +48,8 @@ export class MongoInstrMarketEntryService{
         console.log(search);
         let instrument = await this._instrumentService.getInstrument(
         {
-            InstrumentId:search.InstrumentId
+            InstrumentId:search.InstrumentId,
+            IsTrackable:true
         });
         this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"search",JSON.stringify(search),"");
         let now = getCurrentDate();
@@ -93,7 +94,24 @@ export class MongoInstrMarketEntryService{
         this._logger.InternalLog("D", "getInstrumentMarketEntry",JSON.stringify(instrument),"searchMKT",JSON.stringify(search),JSON.stringify(resultsMkt));
         if(!(resultsMkt == null || !resultsMkt.length))
         { 
-            return resultsMkt;
+            var mappedResult = resultsMkt.map(item=>{
+                var mapped = new InstrumentMarketEntry({
+                    InstrumentId:item.InstrumentId,
+                    Type:item.Type,
+                    TimeStamp:item.TimeStamp,
+                    DateTime:item.DateTime,
+                    Price:item.Price,
+                    Currency:item.Currency,
+                    Size:item.Size,
+                    OrdersCount:item.OrdersCount,
+                    PriceLevel:item.PriceLevel,
+                    TurnoverValue:item.TurnoverValue
+                });
+                return mapped;
+            });
+
+            return mappedResult;
+            
         }
 
         let tokenMkt = new RequestToken({
@@ -156,7 +174,7 @@ export class MongoInstrMarketEntryService{
             Size:           entry.Size,
             OrdersCount:    entry.OrdersCount,
             PriceLevel:     entry.PriceLevel,
-            Turnover:       entry.TurnoverValue
+            TurnoverValue:  entry.TurnoverValue
         };
         let update = 
         {

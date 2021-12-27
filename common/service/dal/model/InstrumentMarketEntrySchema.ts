@@ -5,14 +5,14 @@ import { model } from 'mongoose';
 const instrMarketEntrySchema = new mongoose.Schema({
     InstrumentId: { type: String, required: true },
     Type: { type: String, required: true },
-    DateTime: {type:Date},
+    DateTime: {type:Date,required: true },
     Price:  { type: String},
     Currency:  { type: String},
     Size:  { type: String},
     OrdersCount:  { type: String},
     PriceLevel:  { type: String},
-    Turnover: {type:String},
-    TimeStamp: {type:Date}
+    TurnoverValue: {type:String},
+    TimeStamp: {type:Date,required: true }
     });
 let InstrMarketEntryCollection = mongoose.model('instr-market-entries', instrMarketEntrySchema);
 //export default  RefreshTokenModelCollection;

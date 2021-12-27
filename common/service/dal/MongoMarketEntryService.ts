@@ -41,7 +41,7 @@ export class MongoMarketEntryService{
               DateTime:r.DateTime,
               TimeStamp: r.TimeStamp,
               Price:r.Price,
-              Turnover:r.Turnover,
+              TurnoverValue:r.TurnoverValue,
               OrdersCount:r.OrdersCount
             }  
             return smth;
@@ -63,7 +63,7 @@ export class MongoMarketEntryService{
             Size:           entry.Size,
             OrdersCount:    entry.OrdersCount,
             PriceLevel:     entry.PriceLevel,
-            Turnover:       entry.TurnoverValue
+            TurnoverValue:  entry.TurnoverValue
         };
         let update = 
         {
@@ -73,9 +73,33 @@ export class MongoMarketEntryService{
         await InstrMarketEntryCollection.findOneAndUpdate(query,update,options);
     }
 
-    async addInstrumentMarketEntryMulti(entries:[]):Promise<any>{
+    async addInstrumentMarketEntryMulti(entries:[])
+    {
         await mongoDefaultConnection();
-        console.log(entries);
-        await InstrMarketEntryCollection.insertMany(entries);
+        console.log("start");
+        for(const element of entries)
+        {
+            let entry = new InstrumentMarketEntry(element);
+            let query = 
+            {   
+                InstrumentId:   entry.InstrumentId,
+                Type:           entry.Type,
+                DateTime:       entry.DateTime
+            };
+            let update = 
+            {
+                Price:          entry.Price,
+                Currency:       entry.Currency,
+                Size:           entry.Size,
+                OrdersCount:    entry.OrdersCount,
+                PriceLevel:     entry.PriceLevel,
+                TurnoverValue:  entry.TurnoverValue,
+                TimeStamp:      entry.TimeStamp
+            }
+            let options = { upsert: true, new: true, setDefaultsOnInsert: true };
+        await InstrMarketEntryCollection.findOneAndUpdate(query,update,options);
+        }
+        //await InstrMarketEntryCollection.insertMany(entries);
+        console.log("stop");
     }
 }

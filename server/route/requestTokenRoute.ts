@@ -6,14 +6,7 @@ var requestTokenRouter = express.Router();
 let requestTokeService = new MongoRequestTokenService();
 //-------------------TOKEN-----------------------------
 
-requestTokenRouter.get('/id/:id/type/:type/state/:state/requestor/:requestor',async (req, res)=>{
-    let searchParams = BuildRequestTokenParams(req.params['id'],req.params['type'],req.params['state'],req.params['requestor']);
-    let tokens = await requestTokeService.getToken(searchParams);
-
-    res.send(tokens);
-});
-
-
+//--RESTFUL--//
 requestTokenRouter.post('/',async (req, res)=>{
     console.log(req.body);
     try{
@@ -35,6 +28,17 @@ requestTokenRouter.put('/:id',async (req, res)=>{
         res.sendStatus(400);
     }   
 });
+
+//---EXTRA---//
+
+requestTokenRouter.get('/id/:id/type/:type/state/:state/requestor/:requestor',async (req, res)=>{
+    let searchParams = BuildRequestTokenParams(req.params['id'],req.params['type'],req.params['state'],req.params['requestor']);
+    let tokens = await requestTokeService.getToken(searchParams);
+
+    res.send(tokens);
+});
+
+
 /*
 instrumentRouter.put('/',async (req, res)=>{
     console.log(req.body);

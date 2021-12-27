@@ -16,7 +16,7 @@ export class MongoInstrumentService {
     async getInstrument(search:InstrumentSearchParams = {},
         options:SearchOptions = 
         {
-            Top:1,
+            Top:0,
             SortBy:"TimeStamp",
             SortDirection:"desc"
         }): Promise<any> {
@@ -24,17 +24,19 @@ export class MongoInstrumentService {
         await mongoDefaultConnection();
         const sortDirection= options.SortDirection;
         const limit = options.Top??0;
-            //console.log(search);
         let results = await InstrumentModelCollection.find(search).sort({sortField: sortDirection}).limit(limit);
 
-        let mapped = results.map(r=>{
-            let smth =  {
-              InstrumentId:r.InstrumentId,
-              Status:r.Status,
-              ModifyDate:r.ModifyDate,
-              TimeStamp:r.TimeStamp
-            }  
-            return smth;
+        let mapped = results.map(item=>{
+
+            let instrument = new Instrument ({
+              InstrumentId:item.InstrumentId,
+              Status:item.Status,
+              Ticker:item.Ticker,
+              TaxId:item.TaxId,
+              IsTrackable:item.IsTrackable,
+              IsPersistent:item.IsPersistent,
+            }); 
+            return instrument;
           });
         return mapped;
     }
@@ -46,6 +48,10 @@ export class MongoInstrumentService {
         let dbEntry = new InstrumentModelCollection({
             InstrumentId:       instrument.InstrumentId,
             Status:             instrument.Status,
+            Ticker:             instrument.Ticker,
+            TaxId:              instrument.TaxId,
+            IsTrackable:        instrument.IsTrackable,
+            IsPersistent:       instrument.IsPersistent,
             ModifyDate:         now,
             TimeStamp:          now
         });
@@ -59,12 +65,23 @@ export class MongoInstrumentService {
         await mongoDefaultConnection();
         let now = getCurrentDate();
         var item = await InstrumentModelCollection.findOne({InstrumentId:id});
-        console.log("-->" + item);
-        item.InstrumentId = instrument.InstrumentId;
-        item.Status = instrument.Status;
-        item.ModifyDate = now;
+        item.InstrumentId       = instrument.InstrumentId;
+        item.Status             = instrument.Status;
+        item.Ticker             = instrument.Ticker,
+        item.TaxId              = instrument.TaxId,
+        item.IsTrackable        = instrument.IsTrackable,
+        item.IsPersistent       = instrument.IsPersistent,
+        item.ModifyDate         = now;
 
         await item.save();
+    }
+    async putInstrument(id:string,partialInstrument:{}):Promise<any>{
+        await mongoDefaultConnection();
+        let now = getCurrentDate();
+        let modDate = { ModifyDate: now};
+        let extentedUpdateParams = {...partialInstrument,...modDate};
+       
+        await InstrumentModelCollection.findOneAndUpdate({InstrumentId:id},extentedUpdateParams);
 
     }
 }
