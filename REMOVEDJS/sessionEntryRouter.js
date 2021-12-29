@@ -96,21 +96,18 @@ sessionEntryRouter.post('/', function (req, res) { return __awaiter(void 0, void
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                console.log('Got body:', req.body);
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
+                _a.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, tradingSessionEntryService.addTradingSessionEntry(req.body)];
-            case 2:
+            case 1:
                 _a.sent();
                 res.sendStatus(200);
-                return [3 /*break*/, 4];
-            case 3:
+                return [3 /*break*/, 3];
+            case 2:
                 ex_3 = _a.sent();
                 console.log(ex_3);
                 res.send(ex_3);
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); });

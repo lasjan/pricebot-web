@@ -8,7 +8,7 @@ export function sleep(ms:number) {
   }
 
   export function getMDBConnString(user:string,password:string){
-    return `${process.env.DB_SERVER_URL}${user}:${password}@${process.env.DB_SERVER_CLUSTER}/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+    return `${process.env.DB_SERVER_URL}${user}:${password}@${process.env.DB_SERVER_CLUSTER}/${process.env.DB_NAME}${process.env.DB_NOL3_CONNECTION_PARAMS}`;
 
   }
 
@@ -19,3 +19,5 @@ export function sleep(ms:number) {
 
     return now;
   }
+
+ // mongodb://sa:X4001.X4001@127.0.0.1:27017/NOL3?authSource=admin

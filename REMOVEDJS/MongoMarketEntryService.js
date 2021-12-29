@@ -1,10 +1,4 @@
 "use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -45,16 +39,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MongoInstrumentService = void 0;
-var typedi_1 = require("typedi");
-var utils_1 = require("../../utils");
-var InstrumentSchema_1 = __importDefault(require("./model/InstrumentSchema"));
-require("reflect-metadata");
+exports.MongoMarketEntryService = void 0;
 var config_1 = __importDefault(require("../../database/config"));
-var MongoInstrumentService = /** @class */ (function () {
-    function MongoInstrumentService() {
+var NOLServerException_1 = require("../../exception/NOLServerException");
+var InstrumentMarketEntrySchema_1 = __importDefault(require("./model/InstrumentMarketEntrySchema"));
+var MongoMarketEntryService = /** @class */ (function () {
+    function MongoMarketEntryService(logger) {
+        this._logger = logger;
     }
-    MongoInstrumentService.prototype.getInstrument = function (search, options) {
+    MongoMarketEntryService.prototype.getMarketEntry = function (search, options) {
         var _a;
         if (search === void 0) { search = {}; }
         if (options === void 0) { options = {
@@ -63,63 +56,65 @@ var MongoInstrumentService = /** @class */ (function () {
             SortDirection: "desc"
         }; }
         return __awaiter(this, void 0, void 0, function () {
-            var sortDirection, limit;
+            var sortDirection, limit, sortParams, results, mapped;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, (0, config_1.default)()];
                     case 1:
                         _b.sent();
-                        sortDirection = options.SortDirection;
-                        limit = (_a = options.Top) !== null && _a !== void 0 ? _a : 0;
-                        return [4 /*yield*/, InstrumentSchema_1.default.find(search).sort({ sortField: sortDirection }).limit(limit)];
-                    case 2: 
-                    //console.log(search);
-                    return [2 /*return*/, _b.sent()];
+                        sortDirection = options.SortDirection == "desc" ? "-" : "";
+                        limit = (_a = options.Top) !== null && _a !== void 0 ? _a : 1;
+                        sortParams = sortDirection + options.SortBy;
+                        console.log(options);
+                        console.log(sortParams);
+                        return [4 /*yield*/, InstrumentMarketEntrySchema_1.default.find(search).sort(sortParams).limit(limit)];
+                    case 2:
+                        results = _b.sent();
+                        if (results == null || !results.length) {
+                            throw new NOLServerException_1.NOLServerException("Not found");
+                        }
+                        mapped = results.map(function (r) {
+                            var smth = {
+                                InstrumentId: r.InstrumentId,
+                                Type: r.Type,
+                                DateTime: r.DateTime,
+                                TimeStamp: r.TimeStamp,
+                                Price: r.Price,
+                                Turnover: r.Turnover,
+                                OrdersCount: r.OrdersCount
+                            };
+                            return smth;
+                        });
+                        this._logger.InternalLog("D", "MongoMarketEntryService.getMarketEntry", JSON.stringify(search.InstrumentId), "mapped", JSON.stringify(search), JSON.stringify(mapped));
+                        return [2 /*return*/, mapped];
                 }
             });
         });
     };
-    MongoInstrumentService.prototype.addInstrument = function (instrument) {
+    MongoMarketEntryService.prototype.addInstrumentMarketEntry = function (entry) {
         return __awaiter(this, void 0, void 0, function () {
-            var now, dbEntry;
+            var query, update, options;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, config_1.default)()];
                     case 1:
                         _a.sent();
-                        now = (0, utils_1.getCurrentDate)();
-                        dbEntry = new InstrumentSchema_1.default({
-                            InstrumentId: instrument.InstrumentId,
-                            Status: instrument.Status,
-                            ModifyDate: now,
-                            TimeStamp: now
-                        });
-                        return [4 /*yield*/, InstrumentSchema_1.default.exists({ InstrumentId: instrument.InstrumentId })];
-                    case 2:
-                        if (!!(_a.sent())) return [3 /*break*/, 4];
-                        return [4 /*yield*/, dbEntry.save()];
-                    case 3:
-                        _a.sent();
-                        _a.label = 4;
-                    case 4: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    MongoInstrumentService.prototype.setInstrument = function (instrument) {
-        return __awaiter(this, void 0, void 0, function () {
-            var now;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: 
-                    //await connect(getMDBConnString(process.env.DB_NOL3_USER!,process.env.DB_NOL3_USER_PASS!));
-                    return [4 /*yield*/, (0, config_1.default)()];
-                    case 1:
-                        //await connect(getMDBConnString(process.env.DB_NOL3_USER!,process.env.DB_NOL3_USER_PASS!));
-                        _a.sent();
-                        now = (0, utils_1.getCurrentDate)();
-                        ;
-                        return [4 /*yield*/, InstrumentSchema_1.default.updateOne({ InstrumentId: instrument.InstrumentId }, { Status: instrument.Status })];
+                        query = {
+                            InstrumentId: entry.InstrumentId,
+                            Type: entry.Type,
+                            DateTime: entry.DateTime,
+                            Price: entry.Price,
+                            Currency: entry.Currency,
+                            Size: entry.Size,
+                            OrdersCount: entry.OrdersCount,
+                            PriceLevel: entry.PriceLevel,
+                            Turnover: entry.TurnoverValue
+                        };
+                        update = {
+                            TimeStamp: entry.TimeStamp
+                        };
+                        options = { upsert: true, new: true, setDefaultsOnInsert: true };
+                        return [4 /*yield*/, InstrumentMarketEntrySchema_1.default.findOneAndUpdate(query, update, options)];
                     case 2:
                         _a.sent();
                         return [2 /*return*/];
@@ -127,9 +122,6 @@ var MongoInstrumentService = /** @class */ (function () {
             });
         });
     };
-    MongoInstrumentService = __decorate([
-        (0, typedi_1.Service)()
-    ], MongoInstrumentService);
-    return MongoInstrumentService;
+    return MongoMarketEntryService;
 }());
-exports.MongoInstrumentService = MongoInstrumentService;
+exports.MongoMarketEntryService = MongoMarketEntryService;

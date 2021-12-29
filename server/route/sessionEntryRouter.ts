@@ -36,7 +36,7 @@ sessionEntryRouter.get('/event',async (req, res)=>{
 
 });
 sessionEntryRouter.post('/',async (req, res)=>{
-    console.log('Got body:', req.body);
+    //console.log('Got body:', req.body);
     try{
         await tradingSessionEntryService.addTradingSessionEntry(req.body)
         res.sendStatus(200);

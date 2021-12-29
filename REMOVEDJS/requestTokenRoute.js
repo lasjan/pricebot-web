@@ -1,15 +1,4 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -50,84 +39,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.instrumentRouter = void 0;
+exports.requestTokenRouter = void 0;
 var express_1 = __importDefault(require("express"));
-var MongoInstrumentService_1 = require("../../common/service/dal/MongoInstrumentService");
-var instrumentRouter = express_1.default.Router();
-exports.instrumentRouter = instrumentRouter;
-var instrumentService = new MongoInstrumentService_1.MongoInstrumentService();
+var RequestTokenParamBuilder_1 = require("../../common/service/dal/model/search-builders/RequestTokenParamBuilder");
+var MongoRequestTokenService_1 = require("../../common/service/dal/MongoRequestTokenService");
+var requestTokenRouter = express_1.default.Router();
+exports.requestTokenRouter = requestTokenRouter;
+var requestTokeService = new MongoRequestTokenService_1.MongoRequestTokenService();
 //-------------------TOKEN-----------------------------
-instrumentRouter.get('/anynew', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var instruments;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, instrumentService.getInstrument({
-                    Status: "NEW"
-                })];
-            case 1:
-                instruments = _a.sent();
-                res.send("{any:" + (instruments != null && instruments.length > 0) + "}");
-                return [2 /*return*/];
-        }
-    });
-}); });
-instrumentRouter.get('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var instruments;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, instrumentService.getInstrument({}, {
-                    SortBy: "TimeStamp",
-                    SortDirection: "desc"
-                })];
-            case 1:
-                instruments = _a.sent();
-                res.send(instruments);
-                return [2 /*return*/];
-        }
-    });
-}); });
-instrumentRouter.get('/status/:status/top/:top', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var top, instruments;
+requestTokenRouter.get('/id/:id/type/:type/state/:state/requestor/:requestor', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var searchParams, tokens;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                top = Number(req.params['top']);
-                return [4 /*yield*/, instrumentService.getInstrument({
-                        Status: req.params["status"].toUpperCase()
-                    }, {
-                        Top: top,
-                        SortBy: "TimeStamp",
-                        SortDirection: "desc"
-                    })];
+                searchParams = (0, RequestTokenParamBuilder_1.BuildRequestTokenParams)(req.params['id'], req.params['type'], req.params['state'], req.params['requestor']);
+                return [4 /*yield*/, requestTokeService.getToken(searchParams)];
             case 1:
-                instruments = _a.sent();
-                res.send(instruments);
+                tokens = _a.sent();
+                res.send(tokens);
                 return [2 /*return*/];
         }
     });
 }); });
-instrumentRouter.get('instrument/:instrument/status/:status/top/:top', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var instruments, searchParam;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                searchParam = {};
-                if (req.params['instrument'] != null && req.params['instrument'] != undefined) {
-                    searchParam = __assign(__assign({}, searchParam), { InstrumentId: req.params['instrument'].toUpperCase() });
-                }
-                if (req.params['status'] != null && req.params['status'] != undefined) {
-                    searchParam = __assign(__assign({}, searchParam), { Status: req.params['status'].toUpperCase() });
-                }
-                return [4 /*yield*/, instrumentService.getInstrument(searchParam)];
-            case 1:
-                instruments = _a.sent();
-                res.send(instruments);
-                return [2 /*return*/];
-        }
-    });
-}); });
-instrumentRouter.post('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var ex_1;
+requestTokenRouter.post('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var newToken, ex_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -135,10 +70,10 @@ instrumentRouter.post('/', function (req, res) { return __awaiter(void 0, void 0
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, instrumentService.addInstrument(req.body)];
+                return [4 /*yield*/, requestTokeService.addToken(req.body)];
             case 2:
-                _a.sent();
-                res.sendStatus(200);
+                newToken = _a.sent();
+                res.send(newToken);
                 return [3 /*break*/, 4];
             case 3:
                 ex_1 = _a.sent();
@@ -149,8 +84,8 @@ instrumentRouter.post('/', function (req, res) { return __awaiter(void 0, void 0
         }
     });
 }); });
-instrumentRouter.put('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var ex_2;
+requestTokenRouter.put('/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var newToken, ex_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -158,10 +93,10 @@ instrumentRouter.put('/', function (req, res) { return __awaiter(void 0, void 0,
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, instrumentService.setInstrument(req.body)];
+                return [4 /*yield*/, requestTokeService.setToken(req.params.id, req.body)];
             case 2:
-                _a.sent();
-                res.sendStatus(200);
+                newToken = _a.sent();
+                res.send(newToken);
                 return [3 /*break*/, 4];
             case 3:
                 ex_2 = _a.sent();

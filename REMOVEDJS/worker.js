@@ -13,6 +13,7 @@ require("reflect-metadata");
 var midLogger_1 = require("./middleware/midLogger");
 var typedi_1 = __importDefault(require("typedi"));
 var sessionEventRouter_1 = require("./route/sessionEventRouter");
+var requestTokenRoute_1 = require("./route/requestTokenRoute");
 var allowedOrigins = ['http://localhost:4200', 'http://viewer.server487122.nazwa.pl'];
 var options = {
     origin: allowedOrigins
@@ -33,13 +34,14 @@ var serverStart = function () {
     app.use('/sessionEntry', sessionEntryRouter_1.sessionEntryRouter);
     app.use('/instrument', instrumentRoute_1.instrumentRouter);
     app.use('/sessionEvent', sessionEventRouter_1.sessionEventRouter);
+    app.use('/requestToken', requestTokenRoute_1.requestTokenRouter);
     app.use(function (err, req, res, next) {
         console.error(err.stack);
         req.app.locals.logger.process("Err", req, err.stack);
         res.status(500).send('Something broke!');
     });
     app.listen(3000, function () {
-        console.log('Example app listening on port 3000!');
+        console.log('Example app listening on port 3005!');
     });
 };
 exports.default = serverStart;

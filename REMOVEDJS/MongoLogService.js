@@ -55,7 +55,7 @@ var MongoLogger = /** @class */ (function () {
     }
     MongoLogger.prototype.InternalLog = function (type, reqIp, reqUrl, arg1, arg2, arg3) {
         return __awaiter(this, void 0, void 0, function () {
-            var APP_INSTANCE, APP_SERVER, now, dbEntry;
+            var APP_INSTANCE, APP_SERVER, now, dbEntry, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -79,10 +79,18 @@ var MongoLogger = /** @class */ (function () {
                             Slot3: arg2,
                             TimeStamp: now
                         });
-                        return [4 /*yield*/, dbEntry.save()];
+                        _a.label = 2;
                     case 2:
+                        _a.trys.push([2, 4, , 5]);
+                        return [4 /*yield*/, dbEntry.save()];
+                    case 3:
                         _a.sent();
-                        return [2 /*return*/];
+                        return [3 /*break*/, 5];
+                    case 4:
+                        error_1 = _a.sent();
+                        console.log(error_1);
+                        return [3 /*break*/, 5];
+                    case 5: return [2 /*return*/];
                 }
             });
         });

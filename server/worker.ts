@@ -9,28 +9,32 @@ import "reflect-metadata";
 import { MiddleLogger } from './middleware/midLogger';
 import Container from 'typedi';
 import { sessionEventRouter } from './route/sessionEventRouter';
+import { requestTokenRouter } from './route/requestTokenRoute';
 const allowedOrigins = ['http://localhost:4200','http://viewer.server487122.nazwa.pl'];
-
 const options: cors.CorsOptions = {
   origin: allowedOrigins
 };
 
 let logger = Container.get(MiddleLogger);
 console.log(logger);
+
 let app = express();
 app.locals.logger = logger;
 app.use(cors(options));
-app.use(express.json());
+app.use(express.json({limit: '50mb'}));
 app.use((req, res, next)=>{
   req.app.locals.logger.process("I", req);
   next();
 });
 const serverStart = ()=>{
+  
     app.use('/token', tokenRouter);
     app.use('/marketEntry',marketEntryRouter);
     app.use('/sessionEntry',sessionEntryRouter);
     app.use('/instrument',instrumentRouter);
     app.use('/sessionEvent',sessionEventRouter);
+    app.use('/requestToken',requestTokenRouter);
+    
     app.use(function(err:any, req:any, res:any, next:any) {
       
         console.error(err.stack);

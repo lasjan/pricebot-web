@@ -46,20 +46,24 @@ var NOLServerException_1 = require("../../common/exception/NOLServerException");
 var MongoInstrMarketEntryService_1 = require("../../common/service/dal/MongoInstrMarketEntryService");
 var MongoInstrumentService_1 = require("../../common/service/dal/MongoInstrumentService");
 var MongoLogService_1 = require("../../common/service/dal/MongoLogService");
+var MongoMarketEntryService_1 = require("../../common/service/dal/MongoMarketEntryService");
+var MongoRequestTokenService_1 = require("../../common/service/dal/MongoRequestTokenService");
 var marketEntryRouter = express_1.default.Router();
 exports.marketEntryRouter = marketEntryRouter;
 marketEntryService: MongoInstrMarketEntryService_1.MongoInstrMarketEntryService;
 var serviceInstance = typedi_1.default.get(MongoInstrumentService_1.MongoInstrumentService);
 var loggerInstance = typedi_1.default.get(MongoLogService_1.MongoLogger);
-var marketEntryService = new MongoInstrMarketEntryService_1.MongoInstrMarketEntryService(serviceInstance, loggerInstance);
+var tokenRequestService = new MongoRequestTokenService_1.MongoRequestTokenService();
+var marketInstrumentEntryService = new MongoInstrMarketEntryService_1.MongoInstrMarketEntryService(serviceInstance, loggerInstance, tokenRequestService);
+var marketEntryService = new MongoMarketEntryService_1.MongoMarketEntryService(loggerInstance);
 marketEntryRouter.get('/instrument/:instrument/type/:type/top/:top', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var top_1, dbEntries, ex_1;
+    var top_1, dbEntries, ex_1, error;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
                 top_1 = Number(req.params['top']);
-                return [4 /*yield*/, marketEntryService.getInstrumentMarketEntry({
+                return [4 /*yield*/, marketInstrumentEntryService.getInstrumentMarketEntry({
                         InstrumentId: req.params['instrument'].toUpperCase(),
                         Type: req.params['type'].toUpperCase()
                     }, {
@@ -79,7 +83,53 @@ marketEntryRouter.get('/instrument/:instrument/type/:type/top/:top', function (r
                     res.end();
                 }
                 else {
+                    error = ex_1;
+                    loggerInstance.InternalLog("E", "marketEntryRouter", req.url, error.message, "", "");
                     console.log(ex_1);
+                    res.writeHead(400, { "Content-Type": "text/plain" });
+                    res.write(error);
+                    res.end();
+                }
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
+marketEntryRouter.get('/v2/instrument/:instrument/type/:type/top/:top', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var top_2, dbEntries, ex_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                top_2 = Number(req.params['top']);
+                return [4 /*yield*/, marketEntryService.getMarketEntry({
+                        InstrumentId: req.params['instrument'].toUpperCase(),
+                        Type: req.params['type'].toUpperCase()
+                    }, {
+                        Top: top_2,
+                        SortBy: "TimeStamp",
+                        SortDirection: "desc"
+                    })];
+            case 1:
+                dbEntries = _a.sent();
+                if (dbEntries == null || dbEntries.length == 0) {
+                    res.writeHead(404, { "Content-Type": "text/plain" });
+                    res.write("Market entry not found");
+                    res.end();
+                }
+                else {
+                    res.send(dbEntries);
+                }
+                return [3 /*break*/, 3];
+            case 2:
+                ex_2 = _a.sent();
+                if (ex_2 instanceof NOLServerException_1.NOLServerException) {
+                    res.writeHead(404, { "Content-Type": "text/plain" });
+                    res.write(ex_2.message);
+                    res.end();
+                }
+                else {
+                    console.log(ex_2);
                     res.sendStatus(400);
                 }
                 return [3 /*break*/, 3];
@@ -87,8 +137,28 @@ marketEntryRouter.get('/instrument/:instrument/type/:type/top/:top', function (r
         }
     });
 }); });
+marketEntryRouter.post('asyncRequest', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var ex_3;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, tokenRequestService.addToken(req.body)];
+            case 1:
+                _a.sent();
+                res.sendStatus(200);
+                return [3 /*break*/, 3];
+            case 2:
+                ex_3 = _a.sent();
+                console.log(ex_3);
+                res.sendStatus(400);
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
 marketEntryRouter.post('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var ex_2;
+    var ex_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -99,8 +169,8 @@ marketEntryRouter.post('/', function (req, res) { return __awaiter(void 0, void 
                 res.sendStatus(200);
                 return [3 /*break*/, 3];
             case 2:
-                ex_2 = _a.sent();
-                console.log(ex_2);
+                ex_4 = _a.sent();
+                console.log(ex_4);
                 res.sendStatus(400);
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];

@@ -65,7 +65,7 @@ export class MongoTradingSessionEntryService{
     async getSessionEventTable():Promise<any>{
         await mongoDefaultConnection();
         
-        var verifiedInstruments = await InstrumentModelCollection.find({"Status":"VERIFIED"});
+        var verifiedInstruments = await InstrumentModelCollection.find({"Status":"VERIFIED","IsTrackable":true});
         //console.log(verifiedInstruments);
         if(!verifiedInstruments.length){
             return null;
