@@ -1,3 +1,4 @@
+import { query } from "express";
 import mongoDefaultConnection from "../../database/config";
 import { NOLServerException } from "../../exception/NOLServerException";
 import { InstrumentMarketEntry } from "../../model/InstrumentMarketEntry";
@@ -83,9 +84,15 @@ export class MongoMarketEntryService{
             let query = 
             {   
                 InstrumentId:   entry.InstrumentId,
-                Type:           entry.Type,
-                DateTime:       entry.DateTime
+                Type:           entry.Type
             };
+            if(entry.Type.toUpperCase() == "TRADE")
+            {
+                let dateQuery = {
+                    DateTime:entry.DateTime
+                };
+                query = {...query,...dateQuery };
+            }
             let update = 
             {
                 Price:          entry.Price,
@@ -94,6 +101,7 @@ export class MongoMarketEntryService{
                 OrdersCount:    entry.OrdersCount,
                 PriceLevel:     entry.PriceLevel,
                 TurnoverValue:  entry.TurnoverValue,
+                DateTime:       entry.DateTime,
                 TimeStamp:      entry.TimeStamp
             }
             let options = { upsert: true, new: true, setDefaultsOnInsert: true };
