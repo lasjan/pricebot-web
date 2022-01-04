@@ -10,6 +10,7 @@ import { MiddleLogger } from './middleware/midLogger';
 import Container from 'typedi';
 import { sessionEventRouter } from './route/sessionEventRouter';
 import { requestTokenRouter } from './route/requestTokenRoute';
+import { searchRouter } from './route/searchApi';
 const allowedOrigins = ['http://localhost:4200','http://viewer.server487122.nazwa.pl'];
 const options: cors.CorsOptions = {
   origin: allowedOrigins
@@ -34,7 +35,7 @@ const serverStart = ()=>{
     app.use('/instrument',instrumentRouter);
     app.use('/sessionEvent',sessionEventRouter);
     app.use('/requestToken',requestTokenRouter);
-    
+    app.use('/searchApi',searchRouter);
     app.use(function(err:any, req:any, res:any, next:any) {
       
         console.error(err.stack);

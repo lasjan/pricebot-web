@@ -89,7 +89,8 @@ export class MongoMarketEntryService{
             if(entry.Type.toUpperCase() == "TRADE")
             {
                 let dateQuery = {
-                    DateTime:entry.DateTime
+                    DateTime:entry.DateTime,
+                    Size:entry.Size
                 };
                 query = {...query,...dateQuery };
             }
