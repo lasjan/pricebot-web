@@ -13,7 +13,7 @@ const instrumentSearchEngine = new InstrumentSearchEngine(logger);
 searchRouter.get('/instrument/multiname/:multiname/trackable/:trackable/persistent/:persistent/sortby/:sortby/sortdir/:sortdir/pagesize/:pagesize/index/:index', async function(req, res) {
     try{
         let searchQ = InstrumentSearchParamsBuild(req.params["multiname"],req.params["trackable"],req.params["persistent"]);
-        console.log(searchQ);
+        logger.InternalLog("I","searchRouter.get","",JSON.stringify(searchQ),"start","");
         var results = await instrumentSearchEngine.search(
                 Number(req.params["pagesize"]),
                 Number(req.params["index"]),
@@ -22,9 +22,17 @@ searchRouter.get('/instrument/multiname/:multiname/trackable/:trackable/persiste
                     sortby:req.params["sortby"],
                     sortdir:req.params["sortdir"]
                 });
+        logger.InternalLog("I","searchRouter.get","",JSON.stringify(results),"finish","");
         res.send(results);
     }
     catch(ex){
+        let message = "";
+        if (typeof ex === "string") {
+            message = ex.toUpperCase();
+        } else if (ex instanceof Error) {
+            message = ex.message ;
+        }  
+        logger.InternalLog("E","searchRouter.get","",message,"","");
         res.send(ex);
     }
 });

@@ -19,23 +19,28 @@ export class InstrumentSearchEngine{
         const sortP:any = {};
         sortP[sortby] = sortdir;
 
-       
+        this.logger.InternalLog("D","InstrumentSearchEngine.search","","Filtering","","");
+        let newCol = await InstrumentModelCollection.find(searchParams).sort(sortP);
+        let indexer = 1;
+        let newColWithRowNum = newCol.map(item=> (
+            {...item._doc, ...{rowNumber:indexer++} }
+        ));
+        /* -- tylko w V5
         const aggregate = await InstrumentModelCollection.aggregate([
             { $match:searchParams },
             { $setWindowFields: {
                 sortBy: sortP,
                 output: { rowNumber: { $documentNumber: {} } }
               }}
-          ]);
+          ]);*/
           const displayedColumns= ["InstrumentId", "Ticker", "TaxId", "IsTrackable","IsPersistent"];
-          //console.log(aggregate.length);
           const filtExp = (item:any) =>  item.rowNumber > from && item.rowNumber <= to;
-          let filtered = aggregate.filter(filtExp);
-          //console.log(from + "," + to);
+          let filtered = newColWithRowNum.filter(filtExp);
+
           return {
               cols:displayedColumns,
               vals:filtered,
-              count:aggregate.length
+              count:newCol.length
           }
     }
 }
