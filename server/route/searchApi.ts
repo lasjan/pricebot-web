@@ -10,9 +10,11 @@ const logger = Container.get(MongoLogger);
 const instrumentSearchEngine = new InstrumentSearchEngine(logger);
 //-------------------TOKEN-----------------------------
 
-searchRouter.get('/instrument/multiname/:multiname/trackable/:trackable/persistent/:persistent/sortby/:sortby/sortdir/:sortdir/pagesize/:pagesize/index/:index', async function(req, res) {
+searchRouter.get('/instrument/multiname/:multiname/trackable/:trackable/persistent/:persistent/checkdate/:checkdate/sortby/:sortby/sortdir/:sortdir/pagesize/:pagesize/index/:index', async function(req, res) {
     try{
-        let searchQ = InstrumentSearchParamsBuild(req.params["multiname"],req.params["trackable"],req.params["persistent"]);
+
+        let searchQ = InstrumentSearchParamsBuild(req.params["multiname"],req.params["trackable"],req.params["persistent"],req.params["checkdate"] );
+        
         logger.InternalLog("I","searchRouter.get","",JSON.stringify(searchQ),"start","");
         var results = await instrumentSearchEngine.search(
                 Number(req.params["pagesize"]),

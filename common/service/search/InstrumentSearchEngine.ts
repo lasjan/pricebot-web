@@ -1,4 +1,5 @@
 import internal from "stream";
+import { getCurrentDate,getCurrentDateShort } from "../../utils";
 import InstrumentModelCollection from "../dal/model/InstrumentSchema";
 import { MongoInstrumentService } from "../dal/MongoInstrumentService";
 import { MongoLogger } from "../dal/MongoLogService";
@@ -18,13 +19,58 @@ export class InstrumentSearchEngine{
         const sortdir = (sortParams.sortdir??"asc") == null? -1 : (sortParams.sortdir == "asc" ? 1 : -1);
         const sortP:any = {};
         sortP[sortby] = sortdir;
-
+        let nowShort = getCurrentDateShort();
+        console.log(nowShort);
         this.logger.InternalLog("D","InstrumentSearchEngine.search","","Filtering","","");
-        let newCol = await InstrumentModelCollection.find(searchParams).sort(sortP);
+        let newCol = await InstrumentModelCollection.aggregate([
+            { 
+                $match:searchParams.searchParamsInstruments
+            },
+            { 
+                $sort: sortP
+            },
+            { 
+                $lookup:{
+                from:"aggregates",
+                let: { id: "$InstrumentId"},
+                pipeline: [
+                    { $match:
+                        { $expr:
+                            { $and:
+                                [
+                                   { $eq: ["$$id", "$InstrumentId" ] },
+                                   { $eq: ["$DateString",searchParams.searchParamsAggragate.CheckDate ] }
+                                ]
+                            }
+                        }
+                    }
+                ],
+                as:"details"
+            }},
+            {
+                $unwind: {
+                path: "$details",
+                preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $addFields: {
+                    "RefPrice": "$details.RefPrice",
+                    "TradePrice": "$details.TradePrice"
+                }
+            }
+          ]);
+        //let newCol = await InstrumentModelCollection.find(searchParams).sort(sortP);
         let indexer = 1;
         let newColWithRowNum = newCol.map(item=> (
-            {...item._doc, ...{rowNumber:indexer++} }
+            {
+                ...item, 
+                ...{ rowNumber:indexer++ },
+                ...{ Vector: Math.round((((Number(item.TradePrice) - Number(item.RefPrice))*100)/Number(item.RefPrice))*100)/100}
+             }
         ));
+        //console.log(newColWithRowNum);
+
         /* -- tylko w V5
         const aggregate = await InstrumentModelCollection.aggregate([
             { $match:searchParams },
@@ -33,7 +79,7 @@ export class InstrumentSearchEngine{
                 output: { rowNumber: { $documentNumber: {} } }
               }}
           ]);*/
-          const displayedColumns= ["InstrumentId", "Ticker", "TaxId", "IsTrackable","IsPersistent"];
+          const displayedColumns= ["InstrumentId", "Ticker", "TaxId","RefPrice","TradePrice","Vector"];
           const filtExp = (item:any) =>  item.rowNumber > from && item.rowNumber <= to;
           let filtered = newColWithRowNum.filter(filtExp);
 

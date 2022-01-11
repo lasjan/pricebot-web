@@ -19,5 +19,13 @@ export function sleep(ms:number) {
 
     return now;
   }
+  export function getCurrentDateShort(){
+    var dateObj = new Date();
+    var month = dateObj.getUTCMonth() + 1; //months from 1-12
+    var day = dateObj.getUTCDate();
+    var year = dateObj.getUTCFullYear();
 
+    let newdate = year + "-" + (month>9?month:'0'+month) + "-" + (day>9?day:'0'+day);
+    return newdate;
+  }
  // mongodb://sa:X4001.X4001@127.0.0.1:27017/NOL3?authSource=admin
