@@ -19,14 +19,15 @@ export function TradeSearchBuilderParamsBuild(instrumentId:string,
                     $gte: new Date(from),
                     $lte: new Date(to),
                 };
+                andArray.push(datePeriodQ);
             }
         }
-        if(from != NULL_VAL){
+        /*if(from != NULL_VAL){
             andArray.push({"periodvalue" : from});
         }
         if(to != NULL_VAL){
             andArray.push({"to" : from});
-        }
+        }*/
       
         console.log(andArray);
         searchParamsTrades["$and"] = andArray;

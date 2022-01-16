@@ -16,7 +16,11 @@ let tradingSessionEventService = new MongoTradingSessionChangeEventService(servi
 sessionEventRouter.get('/instrumentId/:instrumentId/type/:type/subtype/:subtype/top/:top',async (req, res)=>{
     try{
         let top = Number(req.params['top']);
-        let searchParams = BuildSessionChangeParams(req.params["instrumentId"],req.params["type"],req.params["subtype"]);
+        let searchParams = BuildSessionChangeParams(req.params["instrumentId"],
+        req.params["type"],
+        req.params["subtype"],
+        NULL_VAL,
+        NULL_VAL);
         var dbEntries = await tradingSessionEventService.getTradingSessionChangeEventWithMarketEntry(
             searchParams,
             [],
@@ -35,7 +39,11 @@ sessionEventRouter.get('/instrumentId/:instrumentId/type/:type/subtype/:subtype/
 sessionEventRouter.get('/instrumentId/:instrumentId/type/:type/subtype/:subtype/markettypes/:markettypes/top/:top',async (req, res)=>{
     try{
         let top = Number(req.params['top']);
-        let searchParams = BuildSessionChangeParams(req.params["instrumentId"],req.params["type"],req.params["subtype"]);
+        let searchParams = BuildSessionChangeParams(req.params["instrumentId"],
+        req.params["type"],
+        req.params["subtype"],
+        NULL_VAL,
+        NULL_VAL);
         let auxMktTypes:string[] = [];
         if(req.params["markettypes"]!=null && req.params["markettypes"]!=NULL_VAL){
             auxMktTypes = req.params["markettypes"].split(",");

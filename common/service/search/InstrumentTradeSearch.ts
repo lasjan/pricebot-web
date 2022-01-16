@@ -12,9 +12,19 @@ export class TradeSearch{
     }
     async search(searchParams:any,sortParams:any){
         await mongoDefaultConnection();
+        console.log(JSON.stringify(searchParams));
         let results = await TradeSchema.find(searchParams.searchParamsTrades).sort({DateTime: 1});
-
-        return results;
+        let map = results.map(item=>{
+            return  {
+                        InstrumentId:item.InstrumentId,
+                        DateTime:item.DateTime,
+                        AvgPrice:item.AvgPrice,
+                        MinPrice:item.MinPrice,
+                        MaxPrice:item.MaxPrice
+                    }
+        })
+        //console.log(map);
+        return map;
     }
 }
     
