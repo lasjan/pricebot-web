@@ -11,20 +11,33 @@ import Container from 'typedi';
 import { sessionEventRouter } from './route/sessionEventRouter';
 import { requestTokenRouter } from './route/requestTokenRoute';
 import { searchRouter } from './route/searchApi';
-const allowedOrigins = ['http://localhost:4200','http://viewer.server487122.nazwa.pl'];
+import { MongoLogger } from '../common/service/dal/MongoLogService';
+const allowedOrigins = ['http://localhost:4200','http://viewer.server487122.nazwa.pl','http://argonviewer.server487122.nazwa.pl'];
 const options: cors.CorsOptions = {
   origin: allowedOrigins
 };
 
 let logger = Container.get(MiddleLogger);
-console.log(logger);
-
+let dbLogger = Container.get(MongoLogger);
 let app = express();
 app.locals.logger = logger;
-app.use(cors(options));
+app.use(cors(
+  {
+    origin:function(origin,callback){
+      if(!origin) return callback(null, true);
+      if(allowedOrigins.indexOf(origin) === -1){
+        var msg = 'The CORS policy for this site does not ' +
+                  'allow access from the specified Origin.' + "[" + origin + "]" + JSON.stringify(allowedOrigins);
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    }
+  }));
+
 app.use(express.json({limit: '50mb'}));
 app.use((req, res, next)=>{
   req.app.locals.logger.process("I", req);
+  req.app.locals.logger.process("I",req,JSON.stringify(options),"");
   next();
 });
 const serverStart = ()=>{

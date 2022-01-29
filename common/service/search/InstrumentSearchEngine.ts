@@ -15,20 +15,17 @@ export class InstrumentSearchEngine{
     async search(pageSize:number,pageIndex:number,searchParams:any,sortParams:any){
         const from = pageSize * (pageIndex);
         const to = pageSize * (pageIndex+1);
-        const sortby = sortParams.sortby??"InstrumentId";
-        const sortdir = (sortParams.sortdir??"asc") == null? -1 : (sortParams.sortdir == "asc" ? 1 : -1);
-        const sortP:any = {};
-        sortP[sortby] = sortdir;
+              
         let nowShort = getCurrentDateShort();
-        console.log(nowShort);
+        //console.log(nowShort);
         this.logger.InternalLog("D","InstrumentSearchEngine.search","","Filtering","","");
         let newCol = await InstrumentModelCollection.aggregate([
             { 
                 $match:searchParams.searchParamsInstruments
             },
-            { 
+            /*{ 
                 $sort: sortP
-            },
+            },*/
             { 
                 $lookup:{
                 from:"aggregates",
@@ -54,12 +51,19 @@ export class InstrumentSearchEngine{
                 }
             },
             {
+                $sort:sortParams
+            },
+            {
                 $addFields: {
                     "RefPrice": "$details.RefPrice",
-                    "TradePrice": "$details.TradePrice"
+                    "TradePrice": "$details.TradePrice",
+                    "VolSize": "$details.VolSize",
+                    "VolTurnover": "$details.VolTurnover",
                 }
             }
           ]);
+          
+       
         //let newCol = await InstrumentModelCollection.find(searchParams).sort(sortP);
         let indexer = 1;
         let newColWithRowNum = newCol.map(item=> (
