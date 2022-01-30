@@ -11,6 +11,7 @@ import { CollarSearchBuilderParamsBuild } from '../../common/service/search/mode
 import { CollarSearch } from '../../common/service/search/InstrumentCollarSearch';
 import { AggregateSearchBuilderParamsBuild } from '../../common/service/search/model/search-builder/AggregateSearchBuilder';
 import { InstrumentAggregateSearch } from '../../common/service/search/InstrumentAggregateSearch';
+import { ProcessService } from '../../common/service/search/ProcessService';
 
 const searchRouter = express.Router();
 const logger = Container.get(MongoLogger);
@@ -18,6 +19,25 @@ const instrumentSearchEngine = new InstrumentSearchEngine(logger);
 const tradeSerchEngine = new TradeSearch(logger);
 const collarSearchEngine = new CollarSearch(logger);
 const aggreegateSearchEngine = new InstrumentAggregateSearch(logger);
+const processSearch = new ProcessService();
+
+searchRouter.get('/process', async function(req, res){
+    try{
+        var results = await processSearch.get({},{});
+        res.send(results);
+    }
+    catch(ex){
+        let message = "";
+        if (typeof ex === "string") {
+            message = ex.toUpperCase();
+        } else if (ex instanceof Error) {
+            message = ex.message ;
+        }  
+        logger.InternalLog("E","searchRouterProcess.get","",message,"","");
+        res.send(ex);
+    }
+});
+
 searchRouter.get('/aggregate/instrumentid/:instrumentid/periodtype/:periodtype/from/:from/to/:to', async function(req, res){
     try{
         let searchQ = AggregateSearchBuilderParamsBuild(req.params["instrumentid"],req.params["periodtype"],req.params["from"],req.params["to"] );
