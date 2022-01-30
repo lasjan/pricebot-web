@@ -10,6 +10,7 @@ const instrumentSchema = new mongoose.Schema({
     IsTrackable: { type: Boolean, required: true ,default:false},
     ModifyDate: {type:Date, required:true},
     TimeStamp: {type:Date, required:true},
+    TrackedFrom:{type:Date, required:false}
     });
 let InstrumentModelCollection = mongoose.model('instruments', instrumentSchema);
 

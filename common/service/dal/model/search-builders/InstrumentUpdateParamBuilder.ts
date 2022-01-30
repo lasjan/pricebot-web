@@ -36,6 +36,11 @@ export function BuildInstrumentUpdateParams(requestBody:any):{}
             //updateParams.push({"IsPersistent": requestBody.IsPersistent});
             updateParams.IsPersistent = requestBody.IsPersistent;
     }
+    if(requestBody.TrackedFrom != null
+        && requestBody.TrackedFrom != NULL_VAL){
+            //updateParams.push({"IsPersistent": requestBody.IsPersistent});
+            updateParams.TrackedFrom = requestBody.TrackedFrom;
+    }
 
     return updateParams;
 }

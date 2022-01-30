@@ -81,7 +81,8 @@ export class MongoInstrumentService {
         let modDate = { ModifyDate: now};
         let extentedUpdateParams = {...partialInstrument,...modDate};
        
-        await InstrumentModelCollection.findOneAndUpdate({InstrumentId:id},extentedUpdateParams);
+        console.log("Params" + JSON.stringify(extentedUpdateParams));
+        await InstrumentModelCollection.findOneAndUpdate({InstrumentId:id},extentedUpdateParams,{upsert: true});
 
     }
 }

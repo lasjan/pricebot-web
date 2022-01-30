@@ -4,10 +4,7 @@
 			"path": "."
 		},
 		{
-			"path": "..\\NOL3LocalWeb"
-		},
-		{
-			"path": "..\\NOL3WebApp\\pb-app"
+			"path": "..\\NOL3WebAppArgon"
 		}
 	],
 	"settings": {
