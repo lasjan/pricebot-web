@@ -121,7 +121,7 @@ searchRouter.get('/trade/indestrumentid/:instrumentid/periodtype/:periodtype/fro
     }
 });
 
-searchRouter.get('/sheet/indestrumentid/:instrumentid/type/:type/from/:from/to/:to', async function(req, res){
+searchRouter.get('/sheet/instrumentId/:instrumentid/type/:type/from/:from/to/:to', async function(req, res){
     try{
         let searchQ = BuildSheetParams(req.params["instrumentid"],req.params["type"],req.params["from"],req.params["to"] );
         var results = await sheetSearchEngine.search(searchQ,null);
