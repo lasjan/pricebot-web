@@ -12,6 +12,8 @@ import { CollarSearch } from '../../common/service/search/InstrumentCollarSearch
 import { AggregateSearchBuilderParamsBuild } from '../../common/service/search/model/search-builder/AggregateSearchBuilder';
 import { InstrumentAggregateSearch } from '../../common/service/search/InstrumentAggregateSearch';
 import { ProcessService } from '../../common/service/search/ProcessService';
+import { BuildSheetParams } from '../../common/service/dal/model/search-builders/SheetParamBuilder';
+import { SheetSearch } from '../../common/service/search/SheetSearch';
 
 const searchRouter = express.Router();
 const logger = Container.get(MongoLogger);
@@ -19,6 +21,7 @@ const instrumentSearchEngine = new InstrumentSearchEngine(logger);
 const tradeSerchEngine = new TradeSearch(logger);
 const collarSearchEngine = new CollarSearch(logger);
 const aggreegateSearchEngine = new InstrumentAggregateSearch(logger);
+const sheetSearchEngine = new SheetSearch(logger);
 const processSearch = new ProcessService();
 
 searchRouter.get('/process', async function(req, res){
@@ -114,6 +117,25 @@ searchRouter.get('/trade/indestrumentid/:instrumentid/periodtype/:periodtype/fro
             message = ex.message ;
         }  
         logger.InternalLog("E","searchRouterTrade.get","",message,"","");
+        res.send(ex);
+    }
+});
+
+searchRouter.get('/sheet/indestrumentid/:instrumentid/type/:type/from/:from/to/:to', async function(req, res){
+    try{
+        let searchQ = BuildSheetParams(req.params["instrumentid"],req.params["type"],req.params["from"],req.params["to"] );
+        var results = await sheetSearchEngine.search(searchQ,null);
+        logger.InternalLog("I","searchRoutersheet.get","",JSON.stringify(searchQ),"start","");
+        res.send(results);
+    }
+    catch(ex){
+        let message = "";
+        if (typeof ex === "string") {
+            message = ex.toUpperCase();
+        } else if (ex instanceof Error) {
+            message = ex.message ;
+        }  
+        logger.InternalLog("E","searchRoutersheet.get","",message,"","");
         res.send(ex);
     }
 });
