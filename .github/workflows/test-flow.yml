@@ -1,5 +1,3 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 on:
   push:
@@ -11,7 +9,7 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
-      - name: Run a one-line script
+      - name: run onLiner
         run: echo Hello, world!
       - name: nodeSetup
         uses: actions/setup-node@v2
