@@ -8,12 +8,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Run a one-line script
-        run: start running
-      - name: use Node@14
+      - name: checkout
         uses: actions/checkout@v2
+      - name: scriptRunInfo
+        run: start running
+      - name: nodeSetup
         uses: actions/setup-node@v2
-        with:
+         with:
           node-version: '14'
         run: npm install
         run: npm test
