@@ -12,7 +12,7 @@ import { sessionEventRouter } from './route/sessionEventRouter';
 import { requestTokenRouter } from './route/requestTokenRoute';
 import { searchRouter } from './route/searchApi';
 import { MongoLogger } from '../common/service/dal/MongoLogService';
-const allowedOrigins = ['http://localhost:4200','http://viewer.server487122.nazwa.pl','http://argonviewer.server487122.nazwa.pl'];
+const allowedOrigins = ['http://localhost:4200','http://viewer.server487122.nazwa.pl','http://argonviewer.server487122.nazwa.pl','http://price-bot.pl'];
 const options: cors.CorsOptions = {
   origin: allowedOrigins
 };
